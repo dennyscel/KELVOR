@@ -1,0 +1,95 @@
+name: KELVOR RC39 v003 Campaign - Windows
+
+on:
+  workflow_dispatch:
+    inputs:
+      campaign_zip_url:
+        description: "HTTPS direct URL for the RC39 v003 integrated campaign candidate"
+        required: true
+        type: string
+      campaign_zip_sha256:
+        description: "Expected SHA-256"
+        required: true
+        default: "de512945b761a9423e68591e94b8bfad231498403a2aa253105cdbcebf324c86"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  campaign:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Locate Google Chrome
+        shell: pwsh
+        run: |
+          $candidates = @(
+            "C:\Program Files\Google\Chrome\Application\chrome.exe",
+            "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+          )
+          $chrome = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $chrome) {
+            $cmd = Get-Command chrome.exe -ErrorAction SilentlyContinue
+            if ($cmd) { $chrome = $cmd.Source }
+          }
+          if (-not $chrome) { throw "Google Chrome not found" }
+          "CHROME_PATH=$chrome" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Download and verify integrated candidate
+        shell: pwsh
+        run: |
+          python scripts/download_and_verify.py `
+            --url "${{ inputs.campaign_zip_url }}" `
+            --sha256 "${{ inputs.campaign_zip_sha256 }}" `
+            --output "$env:RUNNER_TEMP\KELVOR_RC39_CAMPAIGN.zip"
+
+      - name: Extract candidate
+        shell: pwsh
+        run: |
+          $dst = "$env:RUNNER_TEMP\kelvor-campaign"
+          New-Item -ItemType Directory -Force -Path $dst | Out-Null
+          Expand-Archive -LiteralPath "$env:RUNNER_TEMP\KELVOR_RC39_CAMPAIGN.zip" -DestinationPath $dst -Force
+          $root = Get-ChildItem -Path $dst -Directory | Where-Object { $_.Name -like "KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v003_*" } | Select-Object -First 1
+          if (-not $root) { throw "Integrated campaign root not found" }
+          "CAMPAIGN_ROOT=$($root.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Verify candidate internal manifest
+        shell: pwsh
+        run: |
+          Push-Location $env:CAMPAIGN_ROOT
+          python -c "from pathlib import Path; import hashlib; root=Path('.'); bad=[]; lines=(root/'SHA256SUMS.txt').read_text(encoding='utf-8').splitlines(); [(bad.append(rel) if hashlib.sha256((root/rel).read_bytes()).hexdigest()!=h else None) for h,rel in (x.split('  ',1) for x in lines if x.strip())]; print('internal hashes',len(lines),'checked; bad',len(bad)); raise SystemExit(1 if bad else 0)"
+          Pop-Location
+
+      - name: Run integrated campaign Gauntlet in headless Chrome
+        shell: pwsh
+        run: |
+          $env:BROWSER = "python `"$env:GITHUB_WORKSPACE\scripts\ci_browser.py`" %s"
+          python "$env:CAMPAIGN_ROOT\RODAR_CAMPANHA_INTEGRADA_RC39_V003.py"
+          $code = $LASTEXITCODE
+          "CAMPAIGN_EXIT_CODE=$code" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "Campaign runner exit code: $code"
+          exit 0
+
+      - name: Upload campaign evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: KELVOR-RC39-V003-CAMPAIGN-WINDOWS-${{ github.run_number }}
+          path: |
+            ${{ env.CAMPAIGN_ROOT }}/RESULTADOS_CAMPANHA_RC39_V003/**
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce original campaign verdict
+        if: always()
+        shell: pwsh
+        run: |
+          if (-not $env:CAMPAIGN_EXIT_CODE) { throw "Campaign runner did not record an exit code" }
+          if ([int]$env:CAMPAIGN_EXIT_CODE -ne 0) { exit [int]$env:CAMPAIGN_EXIT_CODE }
