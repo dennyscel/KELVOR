@@ -1,16 +1,18 @@
 name: KELVOR Pages Preview
 
 on:
+  release:
+    types: [published]
   workflow_dispatch:
     inputs:
       campaign_zip_url:
-        description: "HTTPS direct URL for the RC39 v003 integrated campaign candidate"
+        description: "HTTPS direct URL for the RC39 v004 integrated campaign candidate"
         required: true
         type: string
       campaign_zip_sha256:
         description: "Expected SHA-256"
         required: true
-        default: "de512945b761a9423e68591e94b8bfad231498403a2aa253105cdbcebf324c86"
+        default: "77e50fde0ac6fc392237616d2842814a92a6d6d392a54487b38321c339b2d36e"
         type: string
 
 permissions:
@@ -21,6 +23,10 @@ permissions:
 concurrency:
   group: pages
   cancel-in-progress: true
+
+env:
+  EXPECTED_ASSET: KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905.zip
+  EXPECTED_SHA256: 77e50fde0ac6fc392237616d2842814a92a6d6d392a54487b38321c339b2d36e
 
 jobs:
   deploy:
@@ -34,18 +40,42 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Download and verify candidate
+      - name: Acquire and verify RC39 v004 candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          python scripts/download_and_verify.py \
-            --url "${{ inputs.campaign_zip_url }}" \
-            --sha256 "${{ inputs.campaign_zip_sha256 }}" \
-            --output "$RUNNER_TEMP/KELVOR_RC39_CAMPAIGN.zip"
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/$EXPECTED_ASSET"
+          if [ "${{ github.event_name }}" = "release" ]; then
+            RELEASE_ID="${{ github.event.release.id }}"
+            ASSET_ID="$(gh api "/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" --jq ".assets[] | select(.name == \"$EXPECTED_ASSET\") | .id" | head -n 1)"
+            test -n "$ASSET_ID"
+            curl --fail --location --silent --show-error \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/octet-stream" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/assets/$ASSET_ID" \
+              --output "$OUT"
+            EXPECTED="$EXPECTED_SHA256"
+          else
+            python scripts/download_and_verify.py \
+              --url "${{ inputs.campaign_zip_url }}" \
+              --sha256 "${{ inputs.campaign_zip_sha256 }}" \
+              --output "$OUT"
+            EXPECTED="${{ inputs.campaign_zip_sha256 }}"
+          fi
+          GOT="$(sha256sum "$OUT" | awk '{print $1}')"
+          echo "bytes=$(stat -c%s "$OUT")"
+          echo "sha256=$GOT"
+          test "$GOT" = "$(echo "$EXPECTED" | tr 'A-F' 'a-f')"
+          echo "CAMPAIGN_ZIP=$OUT" >> "$GITHUB_ENV"
 
       - name: Build static Pages payload
         run: |
+          set -euo pipefail
           mkdir -p "$RUNNER_TEMP/candidate" "$RUNNER_TEMP/site"
-          unzip -q "$RUNNER_TEMP/KELVOR_RC39_CAMPAIGN.zip" -d "$RUNNER_TEMP/candidate"
-          ROOT="$(find "$RUNNER_TEMP/candidate" -maxdepth 1 -type d -name 'KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v003_*' | head -n 1)"
+          unzip -q "$CAMPAIGN_ZIP" -d "$RUNNER_TEMP/candidate"
+          ROOT="$(find "$RUNNER_TEMP/candidate" -maxdepth 1 -type d -name 'KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905' | head -n 1)"
           test -n "$ROOT"
           test -f "$ROOT/web/index.html"
           cp -a "$ROOT/web/." "$RUNNER_TEMP/site/"
