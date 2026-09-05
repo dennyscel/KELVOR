@@ -15,8 +15,10 @@ proto.update=function(t){
   if(!p||this.status!=='RUNNING')return oldUpdate.call(this,t);
   const slime=enemyAt(s,12),gateB=gateAt(s,'GATE_B'),seals=s.sealsCollectedRC37||0,x=p.x;
   // Only intervene when Dawn is already collected and Gate B is already legitimately open.
-  // This keeps the patch from helping satisfy the arena requirement itself.
-  if(seals===1&&gateB?.open&&slime&&x>=21440&&x<=21930&&s.lifeCycle==='active'){
+  // The lower bound covers the slime's authored patrol minimum (~21380), preventing
+  // control from dropping back to older combat logic merely because knockback moves
+  // Kelvor a few pixels left. This still uses ordinary movement/attack/jump input.
+  if(seals===1&&gateB?.open&&slime&&x>=21370&&x<=21930&&s.lifeCycle==='active'){
     if(!this.__seal2V024)this.__seal2V024={preclear:true,attacks:0,startedAtX:Math.round(x)};
     const n=this.__seal2V024,d=slime.sprite.x-p.x,ad=Math.abs(d);
     let axis=0;
