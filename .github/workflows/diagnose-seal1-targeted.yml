@@ -15,6 +15,7 @@ on:
       - 'patches/92-campaign-autoplay-seal1-edge-carry-rc39-v022.js'
       - 'patches/93-campaign-autoplay-seal1-measured-stage2-rc39-v023.js'
       - 'patches/94-campaign-autoplay-seal2-preclear-rc39-v024.js'
+      - 'patches/95-campaign-autoplay-seal2-measured-entry-rc39-v025.js'
       - '.github/workflows/diagnose-seal1-targeted.yml'
   workflow_dispatch:
 
@@ -64,12 +65,12 @@ jobs:
           if(-not $root){throw 'Candidate root missing'}
           "CAMPAIGN_ROOT=$($root.FullName)"|Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      - name: Apply current input-only diagnostic patches through v024
+      - name: Apply current input-only diagnostic patches through v025
         shell: pwsh
         run: |
           $runtimeDir="$env:CAMPAIGN_ROOT\web\release_v81_campaign_presentation_rc39_v004_20260905\src\runtime\v82"
           New-Item -ItemType Directory -Force -Path $runtimeDir|Out-Null
-          $files=@('75-campaign-autoplay-stability-rc39-v005.js','76-campaign-autoplay-stability-rc39-v006.js','79-campaign-autoplay-stability-rc39-v009.js','81-campaign-autoplay-stability-rc39-v011.js','83-campaign-autoplay-safe-route-rc39-v013.js','88-campaign-autoplay-platform-flow-rc39-v018.js','90-campaign-autoplay-platform-timing-rc39-v020.js','91-campaign-autoplay-seal1-authored-route-rc39-v021.js','92-campaign-autoplay-seal1-edge-carry-rc39-v022.js','93-campaign-autoplay-seal1-measured-stage2-rc39-v023.js','94-campaign-autoplay-seal2-preclear-rc39-v024.js')
+          $files=@('75-campaign-autoplay-stability-rc39-v005.js','76-campaign-autoplay-stability-rc39-v006.js','79-campaign-autoplay-stability-rc39-v009.js','81-campaign-autoplay-stability-rc39-v011.js','83-campaign-autoplay-safe-route-rc39-v013.js','88-campaign-autoplay-platform-flow-rc39-v018.js','90-campaign-autoplay-platform-timing-rc39-v020.js','91-campaign-autoplay-seal1-authored-route-rc39-v021.js','92-campaign-autoplay-seal1-edge-carry-rc39-v022.js','93-campaign-autoplay-seal1-measured-stage2-rc39-v023.js','94-campaign-autoplay-seal2-preclear-rc39-v024.js','95-campaign-autoplay-seal2-measured-entry-rc39-v025.js')
           foreach($f in $files){Copy-Item "$env:GITHUB_WORKSPACE\patches\$f" "$runtimeDir\$f" -Force}
           $index="$env:CAMPAIGN_ROOT\web\index.html"
           $text=Get-Content -LiteralPath $index -Raw
@@ -82,7 +83,7 @@ jobs:
       - name: Install Selenium
         run: python -m pip install --disable-pip-version-check --quiet selenium
 
-      - name: Run isolated SEAL_SPIRIT diagnostic with v024
+      - name: Run isolated SEAL_SPIRIT diagnostic with v025
         shell: pwsh
         run: |
           $out="$env:RUNNER_TEMP\seal-spirit-targeted"
