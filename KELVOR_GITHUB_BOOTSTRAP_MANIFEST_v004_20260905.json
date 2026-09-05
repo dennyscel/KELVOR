@@ -1,0 +1,57 @@
+{
+  "project": "KELVOR",
+  "artifact": "GITHUB_BOOTSTRAP",
+  "version": "v004",
+  "date": "2026-09-05",
+  "target_repository": "dennyscel/KELVOR",
+  "repository": {
+    "visibility": "private",
+    "default_branch": "main",
+    "owner": "dennyscel",
+    "status": "CREATED_AND_WRITABLE"
+  },
+  "infrastructure": {
+    "windows_localhost_selftest": "PASS",
+    "successful_run_id": 33946247429,
+    "job_id": 101252751742,
+    "artifact_id": 9963414636,
+    "artifact_digest": "sha256:7e2d7350a1dcb28fc8ce2ab1414e87410b5024f430619e2344eb572e6a9b97fb",
+    "browser": "HeadlessChrome/151.0.0.0",
+    "localhost": "127.0.0.1"
+  },
+  "current_campaign": {
+    "file": "KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905.zip",
+    "bytes": 50335428,
+    "sha256": "77e50fde0ac6fc392237616d2842814a92a6d6d392a54487b38321c339b2d36e",
+    "static_promotion": "PASS",
+    "v003_release_shared_byte_identical": "614/614",
+    "campaign_runtime": "PENDING",
+    "owner_visual": "PENDING",
+    "mobile_physical": "PENDING"
+  },
+  "isolated_84_state": {
+    "qa_package": "KELVOR_QA_84_RECOVERY_v005_20260905.zip",
+    "sha256": "c99e41fb9e77ce4b2664dcb04c2ab357f78775a5d4da16b0375b0eeacaa4d370",
+    "hero": "HERO22_v010",
+    "reported_verdict": "84_TECHNICAL_PASS_CANDIDATE",
+    "raw_result_zip_independent_ingestion": "PENDING"
+  },
+  "workflows": {
+    "bootstrap_selftest": ".github/workflows/bootstrap-selftest.yml",
+    "qa84_windows": ".github/workflows/qa84-windows.yml",
+    "campaign_v003_historical": ".github/workflows/campaign-rc39-v003-windows.yml",
+    "campaign_v004_current": ".github/workflows/campaign-rc39-v004-windows.yml",
+    "pages_preview": ".github/workflows/pages-deploy.yml"
+  },
+  "release_trigger": {
+    "event": "release.published",
+    "required_asset": "KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905.zip",
+    "asset_access": "private repository GITHUB_TOKEN",
+    "sha256_must_match": true
+  },
+  "baselines_preserved": ["RC35", "RC37", "RC39_v003"],
+  "criteria_changed": false,
+  "release_locked": false,
+  "master_gap_source_before_this_revision": "v022",
+  "next_master_gap_revision": "v023"
+}
