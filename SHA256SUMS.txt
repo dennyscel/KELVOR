@@ -2,7 +2,7 @@
 8134c7af1470f35315081df47abb3bcd786d0b0d692f934bf1f160179837517e  .github/workflows/campaign-rc39-v003-windows.yml
 ccff998492dd15227d1c2e40da3285c51b1950bbe93c94caf834fba933366f69  .github/workflows/campaign-rc39-v004-windows.yml
 60eacc1d5d1cc02a66317daf0c7a5b3aa0963e05064b51a14862dccc28f0bbd2  .github/workflows/diagnose-rc39-v004.yml
-583c3808d9eca6e2d3ea21e1c3dd931fbdbaa050f63928631565c653fb183571  .github/workflows/pages-deploy.yml
+1e36d722c3607ad73c647c8766fd239be707d512b4e6a944c6fa89470125e905  .github/workflows/pages-deploy.yml
 740a36f08c0c30363389fddf2220a5afe973d26174c0fd3dda4446baa479f465  .github/workflows/prepare-rc39-v004-release.yml
 5eb0c55638ceb3dd6775b861c0e8f67cb6e1599698e5323b19fe8831d8817f30  .github/workflows/qa84-windows.yml
 0c37f41cbf33d242a9b09975eaca0aadd41a0bd39c0a9ce371f0ae2133f310a4  .github/workflows/repo-checksum-sync.yml
