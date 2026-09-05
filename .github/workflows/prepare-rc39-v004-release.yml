@@ -1,0 +1,64 @@
+name: KELVOR Prepare RC39 v004 Draft Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/prepare-rc39-v004-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      TAG: rc39-v004-ci
+      ASSET: KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905.zip
+      SHA256: 77e50fde0ac6fc392237616d2842814a92a6d6d392a54487b38321c339b2d36e
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create or refresh draft Release metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          NOTES="$RUNNER_TEMP/rc39-v004-release-notes.md"
+          cat > "$NOTES" <<EOF
+          # KELVOR RC39 v004 — CI Candidate
+
+          This is **not** a final game release and **not LOCKED**.
+
+          Required private Release asset:
+
+          \`$ASSET\`
+
+          Required SHA-256:
+
+          \`$SHA256\`
+
+          Static promotion evidence before runtime:
+          - v003 release shared files preserved: 614/614 byte-identical
+          - current candidate internal SHA256SUMS: 981/981 verified
+          - GitHub Windows/Chrome/127.0.0.1 infrastructure: PASS
+          - campaign runtime / Owner QA / physical mobile / Hostinger production: PENDING
+
+          After the exact ZIP is attached, **publish this Release**. Publication automatically triggers the RC39 v004 Windows Campaign Gauntlet and the Pages preview workflow. The Windows workflow verifies SHA-256 before extraction and preserves the original runner verdict.
+          EOF
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; preserving existing draft/assets."
+            gh release edit "$TAG" --title "KELVOR RC39 v004 — CI Candidate" --notes-file "$NOTES"
+          else
+            gh release create "$TAG" \
+              --draft \
+              --title "KELVOR RC39 v004 — CI Candidate" \
+              --notes-file "$NOTES" \
+              --target main
+          fi
+
+          gh release view "$TAG" --json tagName,name,isDraft,isPrerelease,url
