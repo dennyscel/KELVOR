@@ -37,16 +37,16 @@ jobs:
           $dst="$env:RUNNER_TEMP\rc39-source-probe";New-Item -ItemType Directory -Force -Path $dst|Out-Null;Expand-Archive -LiteralPath $out -DestinationPath $dst -Force
           $root=Get-ChildItem -Path $dst -Directory|Where-Object{$_.Name -eq 'KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905'}|Select-Object -First 1;if(-not $root){throw 'Candidate root missing'}
           "CAMPAIGN_ROOT=$($root.FullName)"|Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      - name: Scan release sources for seal/platform geometry
+      - name: Scan release sources for seal geometry and player physics
         shell: pwsh
         run: |
           $out="$env:RUNNER_TEMP\source-probe-out";New-Item -ItemType Directory -Force -Path $out|Out-Null
           @'
           from pathlib import Path
-          import os, re, json, shutil
+          import os, json, shutil
           root=Path(os.environ['CAMPAIGN_ROOT'])/'web'
           out=Path(os.environ['RUNNER_TEMP'])/'source-probe-out'
-          terms=['SEAL_DAWN','13280','13040','platformTopByX','sealsCollectedRC37']
+          terms=['SEAL_DAWN','13280','13040','platformTopByX','sealsCollectedRC37','class PlayerController','PlayerController','airJumpsRemaining','doubleJump','jumpCut','jumpSpeed','jumpVelocity','runSpeed','groundAccel','airAccel','gravityY','bodyWidth','bodyHeight']
           hits=[]; matched=set()
           for p in root.rglob('*'):
               if not p.is_file() or p.suffix.lower() not in {'.js','.json','.html','.py','.md'}: continue
@@ -56,7 +56,7 @@ jobs:
               for i,line in enumerate(lines,1):
                   found=[t for t in terms if t.lower() in line.lower()]
                   if found:
-                      rel=p.relative_to(root).as_posix(); hits.append({'file':rel,'line':i,'terms':found,'text':line[:1000]}); matched.add(p)
+                      rel=p.relative_to(root).as_posix(); hits.append({'file':rel,'line':i,'terms':found,'text':line[:1400]}); matched.add(p)
           (out/'SOURCE_HITS.json').write_text(json.dumps(hits,ensure_ascii=False,indent=2),encoding='utf-8')
           (out/'SOURCE_HITS.txt').write_text('\n'.join(f"{h['file']}:{h['line']} [{','.join(h['terms'])}] {h['text']}" for h in hits),encoding='utf-8')
           copies=out/'matching_files';copies.mkdir(exist_ok=True)
