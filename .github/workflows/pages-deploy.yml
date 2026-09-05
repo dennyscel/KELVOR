@@ -1,0 +1,61 @@
+name: KELVOR Pages Preview
+
+on:
+  workflow_dispatch:
+    inputs:
+      campaign_zip_url:
+        description: "HTTPS direct URL for the RC39 v003 integrated campaign candidate"
+        required: true
+        type: string
+      campaign_zip_sha256:
+        description: "Expected SHA-256"
+        required: true
+        default: "de512945b761a9423e68591e94b8bfad231498403a2aa253105cdbcebf324c86"
+        type: string
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download and verify candidate
+        run: |
+          python scripts/download_and_verify.py \
+            --url "${{ inputs.campaign_zip_url }}" \
+            --sha256 "${{ inputs.campaign_zip_sha256 }}" \
+            --output "$RUNNER_TEMP/KELVOR_RC39_CAMPAIGN.zip"
+
+      - name: Build static Pages payload
+        run: |
+          mkdir -p "$RUNNER_TEMP/candidate" "$RUNNER_TEMP/site"
+          unzip -q "$RUNNER_TEMP/KELVOR_RC39_CAMPAIGN.zip" -d "$RUNNER_TEMP/candidate"
+          ROOT="$(find "$RUNNER_TEMP/candidate" -maxdepth 1 -type d -name 'KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v003_*' | head -n 1)"
+          test -n "$ROOT"
+          test -f "$ROOT/web/index.html"
+          cp -a "$ROOT/web/." "$RUNNER_TEMP/site/"
+          touch "$RUNNER_TEMP/site/.nojekyll"
+          test -f "$RUNNER_TEMP/site/index.html"
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/site
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
