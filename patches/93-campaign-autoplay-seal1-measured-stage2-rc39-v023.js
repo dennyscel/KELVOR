@@ -16,17 +16,24 @@ proto.update=function(t){
   if(s.lifeCycle!=='active')return oldUpdate.call(this,t);
   // Canonical stage-2 tuple selected by the 48-trial Windows/Chrome physics sweep:
   // launchX=12725, doubleX=12840, hold=240ms -> physical landing x=13006.11/y=70.32.
-  if(!this.__seal1V023)this.__seal1V023={stage:2,primary:false,double:false,launchX:12725,doubleX:12840,doubleHoldMs:240};
+  if(!this.__seal1V023){
+    this.__seal1V023={stage:2,primary:false,double:false,launchX:12725,doubleX:12840,doubleHoldMs:240};
+    // v021/v022 are older wrappers in the prototype chain. They may not have been
+    // instantiated yet, so create explicit retired sentinels now; otherwise they
+    // can initialize themselves after v023 lands and steal stage 3 from v020.
+    this.__seal1V021={stage:999,attempts:0,retiredBy:'v023'};
+    this.__seal1V022={stage:999,attempts:0,recoveries:0,retiredBy:'v023'};
+  }
   const n=this.__seal1V023,x=p.x,y=p.y,vy=p.velocityY;
 
   if(n.stage===2){
     if(landed(s,p,13040)){
       n.stage=3;this.jumpUntil=0;
-      // Retire the superseded v021/v022 stage controllers and return stage 3 to
-      // the original v020 pickup logic, which targets the real SEAL_DAWN x13280.
+      // Return stage 3 to the original v020 pickup logic, which targets the real
+      // SEAL_DAWN at x13280. Keep older wrappers permanently retired.
       if(this.__seal1V020)this.__seal1V020.stage=3;
-      if(this.__seal1V021)this.__seal1V021.stage=999;
-      if(this.__seal1V022)this.__seal1V022.stage=999;
+      this.__seal1V021.stage=999;
+      this.__seal1V022.stage=999;
       this.log('seal1_v023_landed_13040',{x:Math.round(x),y:Math.round(y),launchX:n.launchX,doubleX:n.doubleX,doubleHoldMs:n.doubleHoldMs});
       drive(this,.98,false);return;
     }
@@ -44,6 +51,7 @@ proto.update=function(t){
     drive(this,.98,false);return;
   }
 
+  // Stage >=3 intentionally delegates through retired v022/v021 to v020.
   return oldUpdate.call(this,t);
 };
 proto.snapshot=function(){const o=oldSnapshot.call(this);o.version='RC39_V023_INPUT_ONLY_SEAL1_MEASURED_STAGE2';o.seal1V023=this.__seal1V023||null;return o;};
