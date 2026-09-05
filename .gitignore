@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+*.zip
+*.sha256
+RESULTADOS_84/
+RESULTADOS_CAMPANHA_RC39_V003/
+.github-pages/
