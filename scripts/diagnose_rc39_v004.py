@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, json, os, threading, time
+import argparse, json, threading, time
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from selenium import webdriver
@@ -12,6 +12,7 @@ def main() -> int:
     ap.add_argument('--web', required=True)
     ap.add_argument('--chrome', required=True)
     ap.add_argument('--out', required=True)
+    ap.add_argument('--seconds', type=int, default=45)
     args=ap.parse_args()
     web=Path(args.web).resolve(); out=Path(args.out).resolve(); out.mkdir(parents=True, exist_ok=True)
     posts=[]
@@ -37,14 +38,14 @@ def main() -> int:
     try:
         driver=webdriver.Chrome(options=opts); driver.set_page_load_timeout(60); driver.get(url)
         start=time.monotonic()
-        for i in range(45):
+        for i in range(max(1,args.seconds)):
             time.sleep(1)
             try:
                 snap=driver.execute_script("""
-                  const g=window.__KELVOR_CAMPAIGN_INTEGRATED_GAUNTLET_RC39_V004__||null;
+                  const g=window.__KELVOR_CAMPAIGN_INTEGRATED_GAUNTLET_RC39_V004__||window.__KELVOR_CAMPAIGN_INTEGRATED_GAUNTLET_RC39_V005__||null;
                   const qa=window.__KELVOR_W01_L01_RC37_QA__||null;
                   const s=window.__KELVOR_W01_L01_RC37_SCENE__||window.__PLATFORMER_SCENE_V04__||null;
-                  return {href:location.href, ready:document.readyState, gauntlet:g?{enabled:g.enabled,status:g.status,samples:g.samples?.length||0,errors:g.errors||[],finished:!!g.__finished,posted:!!g.__posted}:null,qa:qa,scene:s?{key:s.scene?.key||null,x:s.player?.x||null,y:s.player?.y||null,goal:!!s.goalReached,lifeCycle:s.lifeCycle||null}:null,presentationReady:window.__KELVOR_GLOBAL_PRESENTATION_RC39_READY__===true,campaignHeroReady:window.__KELVOR_CAMPAIGN_RC38_READY__===true};
+                  return {href:location.href,ready:document.readyState,gauntlet:g?{enabled:g.enabled,status:g.status,samples:g.samples?.length||0,errors:g.errors||[],finished:!!g.__finished,posted:!!g.__posted}:null,qa:qa,scene:s?{key:s.scene?.key||null,x:s.player?.x||null,y:s.player?.y||null,goal:!!s.goalReached,lifeCycle:s.lifeCycle||null,hearts:s.hearts??null,deaths:s.deathSerial??null,lastDeathReason:s.lastDeathReason||null,lastDamageSource:s.lastDamageSource||null}:null,presentationReady:window.__KELVOR_GLOBAL_PRESENTATION_RC39_READY__===true,campaignHeroReady:window.__KELVOR_CAMPAIGN_RC38_READY__===true,autoplayV005Ready:window.__KELVOR_RC39_V005_AUTOPLAY_PATCH_READY__===true};
                 """)
             except Exception as e:
                 snap={'selenium_eval_error':repr(e)}
