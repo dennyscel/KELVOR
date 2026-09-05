@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Physics-only CI tuner for the RC37 12690 -> 13040 jump.
+"""Physics-only CI tuner for RC37 SEAL_DAWN stage 2.
 
-This is diagnostic instrumentation only. Every trial starts from the real authored
-12690 platform and uses only the existing virtual input router. Teleports are used
-only to reset a trial and no trial counts as campaign PASS.
+Diagnostic instrumentation only. Each trial resets the test instance to the measured
+natural launch state at the 12690 ledge and drives the existing input router. No
+trial is a campaign PASS and no game physics/collision/save rule is changed.
 """
 from __future__ import annotations
 import argparse, json, threading, time
@@ -25,18 +25,23 @@ def main():
     url=f'http://127.0.0.1:{port}/index.html?rc37=1&campaignrc38=1&campaignfull=1&autotest=1&debug=1&campaignqa=1'
     o=Options();o.binary_location=a.chrome
     for f in ['--headless=new','--disable-gpu','--no-first-run','--no-default-browser-check','--autoplay-policy=no-user-gesture-required','--window-size=1440,900']:o.add_argument(f)
-    d=webdriver.Chrome(options=o);d.set_script_timeout(180)
+    d=webdriver.Chrome(options=o);d.set_script_timeout(220)
     try:
         d.get(url);deadline=time.monotonic()+25
         while time.monotonic()<deadline:
             time.sleep(.2)
             if d.execute_script("return !!(window.__KELVOR_W01_L01_RC37_SCENE__?.player && window.__KELVOR_W01_L01_RC37_SCENE__?.router);"):break
         else: raise SystemExit('scene/router not ready')
+
+        # Measured from the real v020 run: primary at x12682, late double at x12790,
+        # ~517 ms later; v020 used 380/300 ms holds and overshot. Sweep the missing
+        # variable-jump interval plus horizontal braking around the target ledge.
         params=[]
-        for dx in [12745,12765,12785,12805,12825,12845]:
-            for bx in [12955,12975,12995,13015]:
-                for ba in [-0.35,0.0,0.25]:
-                    params.append({'doubleX':dx,'brakeX':bx,'brakeAxis':ba})
+        for dh in [120,150,180,210,240,270,300]:
+            for bx in [12960,12985,13010,13035]:
+                for ba in [-0.35,0.0,0.18]:
+                    params.append({'doubleHoldMs':dh,'brakeX':bx,'brakeAxis':ba})
+
         results=d.execute_async_script("""
           const ps=arguments[0],done=arguments[arguments.length-1];
           const s=window.__KELVOR_W01_L01_RC37_SCENE__,p=s.player,r=s.router,P=window.PlatformerSNESV04;
@@ -45,22 +50,28 @@ def main():
           if(s.autoplayRC37)s.autoplayRC37.status='DIAG_TUNER_PAUSED';
           if(s.autoPilot)s.autoPilot.status='DIAG_TUNER_PAUSED';
           async function trial(par,idx){
-            r.resetVirtual();p.actor.setPosition(12690,cy(12690));p.body.reset(12690,cy(12690));p.body.setVelocity(0,0);
-            await sleep(180);r.resetVirtual();await sleep(80);
-            const targetY=cy(13040),trace=[];let airborne=false,doubleDone=false,doubleUntil=0,primaryUntil=performance.now()+90;
+            r.resetVirtual();
+            p.actor.setPosition(12682,cy(12690));p.body.reset(12682,cy(12690));p.body.setVelocity(0,0);
+            await sleep(150);r.resetVirtual();await sleep(50);
+            // Natural stage-2 landing telemetry showed vx ~= 118 immediately before launch.
+            p.body.setVelocityX(118);
+            const targetY=cy(13040),trace=[];let airborne=false,doubleDone=false,doubleUntil=0;
+            const t0=performance.now(),primaryUntil=t0+380;
             r.setVirtualAxis(1,0);r.setVirtual('jump',true);
-            const t0=performance.now();
-            while(performance.now()-t0<2600){
+            while(performance.now()-t0<3000){
               await sleep(16);const now=performance.now(),x=p.x,y=p.y,vy=p.velocityY;
-              if(now>=primaryUntil && (!doubleDone||now>=doubleUntil))r.setVirtual('jump',false);
               if(!p.grounded)airborne=true;
-              if(airborne&&!doubleDone&&!p.grounded&&p.airJumpsRemaining>0&&x>=par.doubleX){doubleDone=true;doubleUntil=now+90;r.setVirtual('jump',true);}
+              if(!doubleDone&&now>=primaryUntil)r.setVirtual('jump',false);
+              // Reproduce the measured v020 late-double location, but tune how long it is held.
+              if(airborne&&!doubleDone&&!p.grounded&&p.airJumpsRemaining>0&&x>=12790&&vy>50){
+                doubleDone=true;doubleUntil=now+par.doubleHoldMs;r.setVirtual('jump',true);
+              }
               if(doubleDone&&now>=doubleUntil)r.setVirtual('jump',false);
               const axis=x<par.brakeX?1:par.brakeAxis;r.setVirtualAxis(axis,0);
-              if(trace.length<120)trace.push({ms:Math.round(now-t0),x:+x.toFixed(2),y:+y.toFixed(2),vx:+p.velocityX.toFixed(2),vy:+vy.toFixed(2),g:!!p.grounded,air:p.airJumpsRemaining,axis,doubleDone});
-              if(airborne&&p.grounded&&Math.abs(y-targetY)<15&&Math.abs(x-13040)<80){r.resetVirtual();return {...par,idx,result:'LANDED_13040',landingX:+x.toFixed(2),landingY:+y.toFixed(2),elapsedMs:Math.round(now-t0),trace};}
-              if(airborne&&p.grounded&&y>200){r.resetVirtual();return {...par,idx,result:'GROUND_SHORT',landingX:+x.toFixed(2),landingY:+y.toFixed(2),elapsedMs:Math.round(now-t0),trace};}
-              if(x>13160){r.resetVirtual();return {...par,idx,result:'OVERSHOOT',landingX:+x.toFixed(2),landingY:+y.toFixed(2),elapsedMs:Math.round(now-t0),trace};}
+              if(trace.length<170)trace.push({ms:Math.round(now-t0),x:+x.toFixed(2),y:+y.toFixed(2),vx:+p.velocityX.toFixed(2),vy:+vy.toFixed(2),g:!!p.grounded,air:p.airJumpsRemaining,axis,doubleDone});
+              if(airborne&&p.grounded&&Math.abs(y-targetY)<16&&Math.abs(x-13040)<82){r.resetVirtual();return {...par,idx,result:'LANDED_13040',landingX:+x.toFixed(2),landingY:+y.toFixed(2),elapsedMs:Math.round(now-t0),trace};}
+              if(airborne&&p.grounded&&y>200){r.resetVirtual();return {...par,idx,result:x<12970?'GROUND_SHORT':'GROUND_MISS',landingX:+x.toFixed(2),landingY:+y.toFixed(2),elapsedMs:Math.round(now-t0),trace};}
+              if(x>13170){r.resetVirtual();return {...par,idx,result:'OVERSHOOT',landingX:+x.toFixed(2),landingY:+y.toFixed(2),elapsedMs:Math.round(now-t0),trace};}
             }
             r.resetVirtual();return {...par,idx,result:'TIMEBOX',landingX:+p.x.toFixed(2),landingY:+p.y.toFixed(2),trace};
           }
@@ -69,7 +80,9 @@ def main():
         if isinstance(results,dict) and results.get('error'): raise RuntimeError(results['error'])
         winners=[r for r in results if r.get('result')=='LANDED_13040']
         winners.sort(key=lambda r:(abs(r['landingX']-13040),r['elapsedMs']))
-        summary={'diagnostic_only':True,'counts_as_campaign_pass':False,'trial_count':len(results),'success_count':len(winners),'best':winners[:10]}
+        counts={}
+        for r in results: counts[r.get('result','UNKNOWN')]=counts.get(r.get('result','UNKNOWN'),0)+1
+        summary={'diagnostic_only':True,'counts_as_campaign_pass':False,'launch_state':{'x':12682,'platformX':12690,'initialVx':118,'primaryHoldMs':380,'doubleTriggerX':12790,'doubleVyMin':50},'trial_count':len(results),'result_counts':counts,'success_count':len(winners),'best':winners[:12]}
         (out/'TUNER_SUMMARY.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding='utf-8')
         (out/'TUNER_TRIALS.json').write_text(json.dumps(results,ensure_ascii=False,indent=2),encoding='utf-8')
         print(json.dumps(summary,ensure_ascii=False,indent=2))
