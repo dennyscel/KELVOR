@@ -124,10 +124,13 @@ jobs:
           '@ | Set-Content -Encoding utf8 "$env:RUNNER_TEMP\verify_kelvor_manifest.py"
           python "$env:RUNNER_TEMP\verify_kelvor_manifest.py"
 
+      - name: Install Selenium for persistent CI browser
+        run: python -m pip install --disable-pip-version-check --quiet selenium
+
       - name: Run original RC39 v004 campaign Gauntlet in headless Chrome
         shell: pwsh
         run: |
-          $env:BROWSER = "python $env:GITHUB_WORKSPACE\scripts\ci_browser.py %s"
+          $env:BROWSER = "python $env:GITHUB_WORKSPACE\scripts\ci_browser_persistent.py %s"
           python "$env:CAMPAIGN_ROOT\RODAR_CAMPANHA_INTEGRADA_RC39_V004.py"
           $code = $LASTEXITCODE
           "CAMPAIGN_EXIT_CODE=$code" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
