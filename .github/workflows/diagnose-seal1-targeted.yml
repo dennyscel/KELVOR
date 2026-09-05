@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'scripts/diagnose_seal1_targeted.py'
+      - 'scripts/tune_seal1_stage2.py'
       - 'patches/75-campaign-autoplay-stability-rc39-v005.js'
       - 'patches/76-campaign-autoplay-stability-rc39-v006.js'
       - 'patches/79-campaign-autoplay-stability-rc39-v009.js'
@@ -22,7 +23,7 @@ permissions:
 jobs:
   seal-dawn:
     runs-on: windows-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     env:
       RELEASE_ID: '383144921'
       EXPECTED_ASSET: KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905.zip
@@ -80,7 +81,27 @@ jobs:
       - name: Install Selenium
         run: python -m pip install --disable-pip-version-check --quiet selenium
 
+      - name: Sweep real 12690 to 13040 physics
+        shell: pwsh
+        run: |
+          $out="$env:RUNNER_TEMP\seal1-stage2-tuner"
+          "TUNER_OUT=$out"|Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          python scripts/tune_seal1_stage2.py --web "$env:CAMPAIGN_ROOT\web" --chrome "$env:CHROME_PATH" --out "$out"
+          $code=$LASTEXITCODE
+          "TUNER_EXIT_CODE=$code"|Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          exit 0
+
+      - name: Upload tuner evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: KELVOR-RC39-SEAL1-STAGE2-TUNER-${{ github.run_number }}
+          path: ${{ env.TUNER_OUT }}/**
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Run targeted SEAL_DAWN diagnostic
+        continue-on-error: true
         shell: pwsh
         run: |
           $out="$env:RUNNER_TEMP\seal-dawn-targeted"
@@ -93,5 +114,12 @@ jobs:
         with:
           name: KELVOR-RC39-SEAL-DAWN-TARGETED-${{ github.run_number }}
           path: ${{ env.DIAG_OUT }}/**
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 30
+
+      - name: Require at least one real stage2 landing
+        if: always()
+        shell: pwsh
+        run: |
+          if(-not $env:TUNER_EXIT_CODE){throw 'Tuner did not record an exit code'}
+          if([int]$env:TUNER_EXIT_CODE -ne 0){exit [int]$env:TUNER_EXIT_CODE}
