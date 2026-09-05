@@ -4,6 +4,10 @@
 Diagnostic instrumentation only. Trials use the real PlayerController/input router,
 starting on the authored 12690 platform with natural run momentum. Teleport/reset is
 used only between trials and never counts as campaign PASS.
+
+The sweep is deliberately executed in short Selenium batches. This preserves the
+same trial physics while avoiding the HTTP read timeout that previously discarded a
+whole long sweep before Python could save any evidence.
 """
 from __future__ import annotations
 import argparse, json, threading, time
@@ -25,7 +29,7 @@ def main():
     url=f'http://127.0.0.1:{port}/index.html?rc37=1&campaignrc38=1&campaignfull=1&autotest=1&debug=1&campaignqa=1'
     o=Options();o.binary_location=a.chrome
     for f in ['--headless=new','--disable-gpu','--no-first-run','--no-default-browser-check','--autoplay-policy=no-user-gesture-required','--window-size=1440,900']:o.add_argument(f)
-    d=webdriver.Chrome(options=o);d.set_script_timeout(180)
+    d=webdriver.Chrome(options=o);d.set_script_timeout(60)
     try:
         d.get(url);deadline=time.monotonic()+25
         while time.monotonic()<deadline:
@@ -43,14 +47,15 @@ def main():
                 for dh in [180,210,240]:
                     params.append({'launchX':launch_x,'doubleX':double_x,'doubleHoldMs':dh})
 
-        results=d.execute_async_script("""
-          const ps=arguments[0],done=arguments[arguments.length-1];
+        trial_js="""
+          const ps=arguments[0],idxBase=arguments[1],done=arguments[arguments.length-1];
           const s=window.__KELVOR_W01_L01_RC37_SCENE__,p=s.player,r=s.router,P=window.PlatformerSNESV04;
           const sleep=ms=>new Promise(ok=>setTimeout(ok,ms));
           const cy=x=>s.platformTopByX.get(x)-P.TUNING.bodyHeight/2;
           if(s.autoplayRC37)s.autoplayRC37.status='DIAG_TUNER_PAUSED';
           if(s.autoPilot)s.autoPilot.status='DIAG_TUNER_PAUSED';
-          async function trial(par,idx){
+          async function trial(par,localIdx){
+            const idx=idxBase+localIdx;
             r.resetVirtual();p.actor.setPosition(12682,cy(12690));p.body.reset(12682,cy(12690));p.body.setVelocity(0,0);
             await sleep(130);r.resetVirtual();await sleep(40);
             p.moveInputDir=1;p.moveHeldSince=s.time.now-1000;p.body.setVelocityX(118);
@@ -71,14 +76,30 @@ def main():
             }
             r.resetVirtual();return {...par,idx,result:'TIMEBOX',landingX:+p.x.toFixed(2),landingY:+p.y.toFixed(2),trace};
           }
-          (async()=>{const out=[];for(let i=0;i<ps.length;i++)out.push(await trial(ps[i],i));done(out);})().catch(e=>done({error:String(e),stack:e?.stack||null}));
-        """,params)
-        if isinstance(results,dict) and results.get('error'): raise RuntimeError(results['error'])
+          (async()=>{const batchOut=[];for(let i=0;i<ps.length;i++)batchOut.push(await trial(ps[i],i));done(batchOut);})().catch(e=>done({error:String(e),stack:e?.stack||null}));
+        """
+
+        # Keep each WebDriver HTTP request comfortably below the historical 120 s
+        # transport timeout, and persist evidence after every completed batch.
+        batch_size=6
+        results=[]
+        for batch_no,start in enumerate(range(0,len(params),batch_size),start=1):
+            batch=params[start:start+batch_size]
+            batch_results=d.execute_async_script(trial_js,batch,start)
+            if isinstance(batch_results,dict) and batch_results.get('error'):
+                raise RuntimeError(batch_results['error'])
+            if not isinstance(batch_results,list):
+                raise RuntimeError(f'unexpected batch result type: {type(batch_results).__name__}')
+            results.extend(batch_results)
+            partial={'diagnostic_only':True,'counts_as_campaign_pass':False,'batch_no':batch_no,'batch_size':len(batch),'completed_trials':len(results),'total_trials':len(params),'results':results}
+            (out/'TUNER_PROGRESS.json').write_text(json.dumps(partial,ensure_ascii=False,indent=2),encoding='utf-8')
+            print(json.dumps({'batch':batch_no,'completed':len(results),'total':len(params),'landed':sum(1 for r in results if r.get('result')=='LANDED_13040')},ensure_ascii=False))
+
         winners=[r for r in results if r.get('result')=='LANDED_13040']
         winners.sort(key=lambda r:(abs(r['landingX']-13040),r['elapsedMs']))
         counts={}
         for r in results: counts[r.get('result','UNKNOWN')]=counts.get(r.get('result','UNKNOWN'),0)+1
-        summary={'diagnostic_only':True,'counts_as_campaign_pass':False,'physics':{'gravityY':1750,'runSpeed':235,'airAcceleration':950,'jumpVelocity':-585,'doubleJumpVelocity':-535,'jumpCutMultiplier':0.5,'bodyWidth':34,'bodyHeight':64},'launch_state':{'resetX':12682,'platformX':12690,'initialVx':118,'moveHeldMs':1000},'trial_count':len(results),'result_counts':counts,'success_count':len(winners),'best':winners[:12]}
+        summary={'diagnostic_only':True,'counts_as_campaign_pass':False,'batched_transport':True,'batch_size':batch_size,'physics':{'gravityY':1750,'runSpeed':235,'airAcceleration':950,'jumpVelocity':-585,'doubleJumpVelocity':-535,'jumpCutMultiplier':0.5,'bodyWidth':34,'bodyHeight':64},'launch_state':{'resetX':12682,'platformX':12690,'initialVx':118,'moveHeldMs':1000},'trial_count':len(results),'result_counts':counts,'success_count':len(winners),'best':winners[:12]}
         (out/'TUNER_SUMMARY.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding='utf-8')
         (out/'TUNER_TRIALS.json').write_text(json.dumps(results,ensure_ascii=False,indent=2),encoding='utf-8')
         print(json.dumps(summary,ensure_ascii=False,indent=2))
