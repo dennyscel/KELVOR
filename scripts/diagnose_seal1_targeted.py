@@ -47,16 +47,23 @@ def main():
             texture:o?.texture?.key||null,frame:o?.frame?.name??null,active:o?.active??null,visible:o?.visible??null,depth:o?.depth??null,
             data:primitiveData(o),body:o?.body?{x:o.body.x,y:o.body.y,width:o.body.width,height:o.body.height,enable:o.body.enable,immovable:o.body.immovable}:null
           });
-          const children=(s?.children?.list||[]).filter(o=>{
+          const children=Array.from(s?.children?.list||[]).filter(o=>{
             const k=((o?.texture?.key||'')+' '+(o?.name||'')+' '+JSON.stringify(primitiveData(o))).toLowerCase();
             return (Number.isFinite(o?.x)&&o.x>=11700&&o.x<=13700)||k.includes('seal');
           }).map(item);
-          const bodies=(s?.physics?.world?.bodies?.entries||[]).map(b=>b?.gameObject).filter(Boolean).filter(o=>{
-            const k=((o?.texture?.key||'')+' '+(o?.name||'')).toLowerCase();
+          const worldEntries=s?.physics?.world?.bodies?.entries ?? s?.physics?.world?.bodies ?? [];
+          const bodies=Array.from(worldEntries||[]).map(b=>b?.gameObject).filter(Boolean).filter(o=>{
+            const k=((o?.texture?.key||'')+' '+(o?.name||'')+' '+JSON.stringify(primitiveData(o))).toLowerCase();
             return (Number.isFinite(o?.x)&&o.x>=11700&&o.x<=13700)||k.includes('seal');
           }).map(item);
           const platforms=s?.platformTopByX?Array.from(s.platformTopByX.entries()).filter(([x])=>x>=11700&&x<=13700).map(([x,top])=>({x,top,centerY:top-(window.PlatformerSNESV04?.TUNING?.bodyHeight||0)/2})):[];
-          return {sceneKey:s?.scene?.key||null,platforms,children,bodies,sceneKeys:Object.keys(s||{}).filter(k=>/seal|platform/i.test(k)).sort()};
+          const sealArrays={};
+          for(const k of Object.keys(s||{}).filter(k=>/seal/i.test(k))){
+            const v=s[k];
+            if(Array.isArray(v))sealArrays[k]=v.slice(0,20).map(x=>x&&typeof x==='object'?item(x.sprite||x):x);
+            else if(v===null||['string','number','boolean'].includes(typeof v))sealArrays[k]=v;
+          }
+          return {sceneKey:s?.scene?.key||null,platforms,children,bodies,sealArrays,sceneKeys:Object.keys(s||{}).filter(k=>/seal|platform/i.test(k)).sort()};
         """)
         (out/'GEOMETRY.json').write_text(json.dumps(geometry,ensure_ascii=False,indent=2),encoding='utf-8')
 
