@@ -15,10 +15,10 @@ proto.update=function(t){
   if(!p||this.status!=='RUNNING')return oldUpdate.call(this,t);
   const slime=enemyAt(s,12),gateB=gateAt(s,'GATE_B'),seals=s.sealsCollectedRC37||0,x=p.x;
   // Only intervene when Dawn is already collected and Gate B is already legitimately open.
-  // A/B telemetry observed both prior hits at x≈21438 and x≈21425. Keep control down
-  // to x=21420 so those exact knockback positions do not fall through to v009, while
-  // avoiding the slower over-wide 21370 band. All actions remain ordinary player input.
-  if(seals===1&&gateB?.open&&slime&&x>=21420&&x<=21930&&s.lifeCycle==='active'){
+  // A/B telemetry showed knockback can carry Kelvor to x≈21357. Keep this input-only
+  // controller active through x=21330, and when x<21420 steer right so it cannot drift
+  // indefinitely off the combat lane. Enemy/player HP and damage rules remain untouched.
+  if(seals===1&&gateB?.open&&slime&&x>=21330&&x<=21930&&s.lifeCycle==='active'){
     if(!this.__seal2V024)this.__seal2V024={preclear:true,attacks:0,startedAtX:Math.round(x)};
     const n=this.__seal2V024,d=slime.sprite.x-p.x,ad=Math.abs(d);
     let axis=0;
@@ -28,6 +28,7 @@ proto.update=function(t){
     else if(d>=0)axis=-.34;
     else if(d>-45)axis=-.22;
     else axis=.18;
+    if(x<21420)axis=.55;
     if(ad<=118){
       if(this.pulseAttack(t,'seal2_v024_preclear_slime12',125))n.attacks++;
       // Emergency spacing remains ordinary input; it does not grant invulnerability.
