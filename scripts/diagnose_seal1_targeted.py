@@ -34,6 +34,32 @@ def main():
             ready=bool(d.execute_script("return !!(window.__KELVOR_W01_L01_RC37_SCENE__?.player && window.__KELVOR_W01_L01_RC37_SCENE__?.autoplayRC37);"))
             if ready:break
         if not ready:raise SystemExit('scene/autoplay not ready')
+
+        geometry=d.execute_script("""
+          const s=window.__KELVOR_W01_L01_RC37_SCENE__;
+          const primitiveData=(o)=>{
+            const src=o?.data?.list||{};const out={};
+            for(const [k,v] of Object.entries(src))if(v===null||['string','number','boolean'].includes(typeof v))out[k]=v;
+            return out;
+          };
+          const item=(o)=>({
+            type:o?.constructor?.name||null,name:o?.name||null,x:Number.isFinite(o?.x)?o.x:null,y:Number.isFinite(o?.y)?o.y:null,
+            texture:o?.texture?.key||null,frame:o?.frame?.name??null,active:o?.active??null,visible:o?.visible??null,depth:o?.depth??null,
+            data:primitiveData(o),body:o?.body?{x:o.body.x,y:o.body.y,width:o.body.width,height:o.body.height,enable:o.body.enable,immovable:o.body.immovable}:null
+          });
+          const children=(s?.children?.list||[]).filter(o=>{
+            const k=((o?.texture?.key||'')+' '+(o?.name||'')+' '+JSON.stringify(primitiveData(o))).toLowerCase();
+            return (Number.isFinite(o?.x)&&o.x>=11700&&o.x<=13700)||k.includes('seal');
+          }).map(item);
+          const bodies=(s?.physics?.world?.bodies?.entries||[]).map(b=>b?.gameObject).filter(Boolean).filter(o=>{
+            const k=((o?.texture?.key||'')+' '+(o?.name||'')).toLowerCase();
+            return (Number.isFinite(o?.x)&&o.x>=11700&&o.x<=13700)||k.includes('seal');
+          }).map(item);
+          const platforms=s?.platformTopByX?Array.from(s.platformTopByX.entries()).filter(([x])=>x>=11700&&x<=13700).map(([x,top])=>({x,top,centerY:top-(window.PlatformerSNESV04?.TUNING?.bodyHeight||0)/2})):[];
+          return {sceneKey:s?.scene?.key||null,platforms,children,bodies,sceneKeys:Object.keys(s||{}).filter(k=>/seal|platform/i.test(k)).sort()};
+        """)
+        (out/'GEOMETRY.json').write_text(json.dumps(geometry,ensure_ascii=False,indent=2),encoding='utf-8')
+
         d.execute_script("""
           const s=window.__KELVOR_W01_L01_RC37_SCENE__,p=s.player;
           p.actor.setPosition(11950,254);p.body.setVelocity(0,0);s.hearts=3;s.lifeCycle='active';
@@ -51,7 +77,7 @@ def main():
             if (snap.get('seals') or 0)>=1:result='SEAL1_COLLECTED';break
             if snap.get('life')=='gameover':result='GAME_OVER';break
         if result is None:result='TIMEBOX'
-        summary={'diagnostic_only':True,'counts_as_campaign_pass':False,'result':result,'elapsed':round(time.monotonic()-start,2),'last':samples[-1] if samples else None}
+        summary={'diagnostic_only':True,'counts_as_campaign_pass':False,'result':result,'elapsed':round(time.monotonic()-start,2),'geometry_file':'GEOMETRY.json','last':samples[-1] if samples else None}
         (out/'SUMMARY.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding='utf-8');(out/'SAMPLES.json').write_text(json.dumps(samples,ensure_ascii=False,indent=2),encoding='utf-8');print(json.dumps(summary,ensure_ascii=False,indent=2))
         return 0 if result=='SEAL1_COLLECTED' else 1
     finally:
