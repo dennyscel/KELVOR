@@ -1,4 +1,4 @@
-name: KELVOR RC39 v004 Targeted SEAL_SPIRIT Diagnostic
+name: KELVOR RC39 v004 Targeted MID-ROUTE to SEAL_SPIRIT
 
 on:
   push:
@@ -16,6 +16,7 @@ on:
       - 'patches/93-campaign-autoplay-seal1-measured-stage2-rc39-v023.js'
       - 'patches/94-campaign-autoplay-seal2-preclear-rc39-v024.js'
       - 'patches/95-campaign-autoplay-seal2-measured-entry-rc39-v025.js'
+      - 'patches/96-campaign-autoplay-post-dawn-bee7-preclear-rc39-v026.js'
       - '.github/workflows/diagnose-seal1-targeted.yml'
   workflow_dispatch:
 
@@ -23,7 +24,7 @@ permissions:
   contents: read
 
 jobs:
-  seal-spirit:
+  post-dawn-to-spirit:
     runs-on: windows-latest
     timeout-minutes: 10
     env:
@@ -57,20 +58,20 @@ jobs:
           curl.exe --fail --location --silent --show-error -H "Authorization: Bearer $env:GH_TOKEN" -H "Accept: application/octet-stream" -H "X-GitHub-Api-Version: 2022-11-28" "https://api.github.com/repos/$env:GITHUB_REPOSITORY/releases/assets/$($asset.id)" --output "$out"
           if($LASTEXITCODE -ne 0){throw 'Release asset download failed'}
           $got=(Get-FileHash -LiteralPath $out -Algorithm SHA256).Hash.ToLowerInvariant()
-          if($got -ne $env:EXPECTED_SHA256){throw "SHA mismatch $got"}
-          $dst="$env:RUNNER_TEMP\rc39-v004-seal-spirit"
+          if($got-ne $env:EXPECTED_SHA256){throw "SHA mismatch $got"}
+          $dst="$env:RUNNER_TEMP\rc39-v004-mid-route"
           New-Item -ItemType Directory -Force -Path $dst|Out-Null
           Expand-Archive -LiteralPath $out -DestinationPath $dst -Force
           $root=Get-ChildItem -Path $dst -Directory|Where-Object{$_.Name -eq 'KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905'}|Select-Object -First 1
           if(-not $root){throw 'Candidate root missing'}
           "CAMPAIGN_ROOT=$($root.FullName)"|Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      - name: Apply current input-only diagnostic patches through v025
+      - name: Apply current input-only diagnostic patches through v026
         shell: pwsh
         run: |
           $runtimeDir="$env:CAMPAIGN_ROOT\web\release_v81_campaign_presentation_rc39_v004_20260905\src\runtime\v82"
           New-Item -ItemType Directory -Force -Path $runtimeDir|Out-Null
-          $files=@('75-campaign-autoplay-stability-rc39-v005.js','76-campaign-autoplay-stability-rc39-v006.js','79-campaign-autoplay-stability-rc39-v009.js','81-campaign-autoplay-stability-rc39-v011.js','83-campaign-autoplay-safe-route-rc39-v013.js','88-campaign-autoplay-platform-flow-rc39-v018.js','90-campaign-autoplay-platform-timing-rc39-v020.js','91-campaign-autoplay-seal1-authored-route-rc39-v021.js','92-campaign-autoplay-seal1-edge-carry-rc39-v022.js','93-campaign-autoplay-seal1-measured-stage2-rc39-v023.js','94-campaign-autoplay-seal2-preclear-rc39-v024.js','95-campaign-autoplay-seal2-measured-entry-rc39-v025.js')
+          $files=@('75-campaign-autoplay-stability-rc39-v005.js','76-campaign-autoplay-stability-rc39-v006.js','79-campaign-autoplay-stability-rc39-v009.js','81-campaign-autoplay-stability-rc39-v011.js','83-campaign-autoplay-safe-route-rc39-v013.js','88-campaign-autoplay-platform-flow-rc39-v018.js','90-campaign-autoplay-platform-timing-rc39-v020.js','91-campaign-autoplay-seal1-authored-route-rc39-v021.js','92-campaign-autoplay-seal1-edge-carry-rc39-v022.js','93-campaign-autoplay-seal1-measured-stage2-rc39-v023.js','94-campaign-autoplay-seal2-preclear-rc39-v024.js','95-campaign-autoplay-seal2-measured-entry-rc39-v025.js','96-campaign-autoplay-post-dawn-bee7-preclear-rc39-v026.js')
           foreach($f in $files){Copy-Item "$env:GITHUB_WORKSPACE\patches\$f" "$runtimeDir\$f" -Force}
           $index="$env:CAMPAIGN_ROOT\web\index.html"
           $text=Get-Content -LiteralPath $index -Raw
@@ -83,18 +84,18 @@ jobs:
       - name: Install Selenium
         run: python -m pip install --disable-pip-version-check --quiet selenium
 
-      - name: Run isolated SEAL_SPIRIT diagnostic with v025
+      - name: Run post-Dawn natural mid-route to SEAL_SPIRIT
         shell: pwsh
         run: |
-          $out="$env:RUNNER_TEMP\seal-spirit-targeted"
+          $out="$env:RUNNER_TEMP\post-dawn-to-spirit"
           "DIAG_OUT=$out"|Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          python scripts/diagnose_seal_targeted.py --web "$env:CAMPAIGN_ROOT\web" --chrome "$env:CHROME_PATH" --out "$out" --target-id SEAL_SPIRIT --start-x 21540 --precollect SEAL_DAWN --open-gates GATE_A,GATE_B --seconds 65
+          python scripts/diagnose_seal_targeted.py --web "$env:CAMPAIGN_ROOT\web" --chrome "$env:CHROME_PATH" --out "$out" --target-id SEAL_SPIRIT --start-x 13220 --precollect SEAL_DAWN --open-gates GATE_A --seconds 150
 
       - name: Upload targeted evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: KELVOR-RC39-SEAL-SPIRIT-TARGETED-${{ github.run_number }}
+          name: KELVOR-RC39-POST-DAWN-TO-SPIRIT-${{ github.run_number }}
           path: ${{ env.DIAG_OUT }}/**
           if-no-files-found: error
           retention-days: 30
