@@ -23,8 +23,9 @@ def main():
     ap.add_argument('--web',required=True);ap.add_argument('--chrome',required=True);ap.add_argument('--out',required=True)
     ap.add_argument('--target-id',required=True);ap.add_argument('--start-x',type=float,required=True);ap.add_argument('--start-y',type=float,default=254)
     ap.add_argument('--precollect',default='');ap.add_argument('--open-gates',default='');ap.add_argument('--seconds',type=int,default=55)
+    ap.add_argument('--miss-x',type=float,default=None,help='Optional absolute x after which the target region is considered missed')
     a=ap.parse_args();web=Path(a.web).resolve();out=Path(a.out).resolve();out.mkdir(parents=True,exist_ok=True)
-    pre=csv(a.precollect); gates=csv(a.open_gates)
+    pre=csv(a.precollect); gates=csv(a.open_gates); miss_x=a.miss_x if a.miss_x is not None else a.start_x+2500
     class H(SimpleHTTPRequestHandler):
         def __init__(self,*x,**kw):super().__init__(*x,directory=str(web),**kw)
         def log_message(self,*x):pass
@@ -65,7 +66,7 @@ def main():
           if(s.autoplayRC37){s.autoplayRC37.lastX=cfg.x;s.autoplayRC37.lastProgressAt=s.time.now;}
           window.__KELVOR_GENERIC_SEAL_DIAGNOSTIC__={...cfg,diagnosticOnly:true};
           return {seals:(s.sealsRC37||[]).map(q=>({id:q.id,collected:q.collected,x:q.sprite?.x??null,y:q.sprite?.y??null})),gates:(s.lockGatesRC37||[]).map(g=>({id:g.id,open:g.open,defeated:g.defeated,required:g.required}))};
-        """,{'precollect':pre,'gates':gates,'x':a.start_x,'y':a.start_y,'target':a.target_id})
+        """,{'precollect':pre,'gates':gates,'x':a.start_x,'y':a.start_y,'target':a.target_id,'missX':miss_x})
         (out/'INIT_STATE.json').write_text(json.dumps(init,ensure_ascii=False,indent=2),encoding='utf-8')
         start=time.monotonic();result='TIMEBOX'
         while time.monotonic()-start<a.seconds:
@@ -77,8 +78,8 @@ def main():
             snap['elapsed']=round(time.monotonic()-start,3);samples.append(snap)
             if snap.get('targetCollected'):result='TARGET_SEAL_COLLECTED';break
             if snap.get('life')=='gameover':result='GAME_OVER';break
-            if (snap.get('x') or 0)>a.start_x+2500:result='TARGET_REGION_MISSED';break
-        summary={'diagnostic_only':True,'counts_as_campaign_pass':False,'target_id':a.target_id,'precollect':pre,'open_gates':gates,'result':result,'elapsed':round(time.monotonic()-start,2),'geometry_file':'GEOMETRY.json','last':samples[-1] if samples else None}
+            if (snap.get('x') or 0)>miss_x:result='TARGET_REGION_MISSED';break
+        summary={'diagnostic_only':True,'counts_as_campaign_pass':False,'target_id':a.target_id,'precollect':pre,'open_gates':gates,'miss_x':miss_x,'result':result,'elapsed':round(time.monotonic()-start,2),'geometry_file':'GEOMETRY.json','last':samples[-1] if samples else None}
         (out/'SUMMARY.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding='utf-8');(out/'SAMPLES.json').write_text(json.dumps(samples,ensure_ascii=False,indent=2),encoding='utf-8');print(json.dumps(summary,ensure_ascii=False,indent=2))
         return 0 if result=='TARGET_SEAL_COLLECTED' else 1
     finally:
