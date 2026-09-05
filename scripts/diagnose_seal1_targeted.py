@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+"""Targeted CI diagnostic for SEAL_DAWN only.
+
+Diagnostic-only acceleration: teleports the *test instance* to x=11950 after normal
+scene creation. It never counts as campaign PASS and never changes packaged game
+physics, lives, acceptance rules or persistent state.
+"""
+from __future__ import annotations
+import argparse, json, threading, time
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+
+def main():
+    ap=argparse.ArgumentParser();ap.add_argument('--web',required=True);ap.add_argument('--chrome',required=True);ap.add_argument('--out',required=True)
+    a=ap.parse_args();web=Path(a.web).resolve();out=Path(a.out).resolve();out.mkdir(parents=True,exist_ok=True)
+    class H(SimpleHTTPRequestHandler):
+        def __init__(self,*x,**kw):super().__init__(*x,directory=str(web),**kw)
+        def log_message(self,*x):pass
+        def do_POST(self):
+            n=int(self.headers.get('Content-Length','0'));self.rfile.read(n);self.send_response(204);self.end_headers()
+    srv=ThreadingHTTPServer(('127.0.0.1',0),H);threading.Thread(target=srv.serve_forever,daemon=True).start();port=srv.server_address[1]
+    url=f'http://127.0.0.1:{port}/index.html?rc37=1&campaignrc38=1&campaignfull=1&autotest=1&debug=1&campaignqa=1'
+    o=Options();o.binary_location=a.chrome
+    for f in ['--headless=new','--disable-gpu','--no-first-run','--no-default-browser-check','--autoplay-policy=no-user-gesture-required','--window-size=1440,900']:o.add_argument(f)
+    d=webdriver.Chrome(options=o);samples=[]
+    try:
+        d.get(url);deadline=time.monotonic()+25
+        ready=False
+        while time.monotonic()<deadline:
+            time.sleep(.25)
+            ready=bool(d.execute_script("return !!(window.__KELVOR_W01_L01_RC37_SCENE__?.player && window.__KELVOR_W01_L01_RC37_SCENE__?.autoplayRC37);"))
+            if ready:break
+        if not ready:raise SystemExit('scene/autoplay not ready')
+        d.execute_script("""
+          const s=window.__KELVOR_W01_L01_RC37_SCENE__,p=s.player;
+          p.actor.setPosition(11950,254);p.body.setVelocity(0,0);s.hearts=3;s.lifeCycle='active';
+          if(p.body){p.body.reset(11950,254);p.body.setVelocity(0,0);}
+          if(s.autoplayRC37){s.autoplayRC37.lastX=11950;s.autoplayRC37.lastProgressAt=s.time.now;}
+          window.__KELVOR_TARGETED_SEAL1_DIAGNOSTIC__=true;
+        """)
+        start=time.monotonic();result=None
+        for sec in range(1,71):
+            time.sleep(1)
+            snap=d.execute_script("""
+              const s=window.__KELVOR_W01_L01_RC37_SCENE__,p=s?.player,q=window.__KELVOR_W01_L01_RC37_QA__;
+              return {x:p?.x??null,y:p?.y??null,vx:p?.velocityX??null,vy:p?.velocityY??null,grounded:p?.grounded??null,air:p?.airJumpsRemaining??null,hearts:s?.hearts??null,life:s?.lifeCycle??null,seals:s?.sealsCollectedRC37??null,qa:q||null};
+            """);snap['second']=sec;samples.append(snap)
+            if (snap.get('seals') or 0)>=1:result='SEAL1_COLLECTED';break
+            if snap.get('life')=='gameover':result='GAME_OVER';break
+        if result is None:result='TIMEBOX'
+        summary={'diagnostic_only':True,'counts_as_campaign_pass':False,'result':result,'elapsed':round(time.monotonic()-start,2),'last':samples[-1] if samples else None}
+        (out/'SUMMARY.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding='utf-8');(out/'SAMPLES.json').write_text(json.dumps(samples,ensure_ascii=False,indent=2),encoding='utf-8');print(json.dumps(summary,ensure_ascii=False,indent=2))
+        return 0 if result=='SEAL1_COLLECTED' else 1
+    finally:
+        try:d.quit()
+        except:pass
+        srv.shutdown();srv.server_close()
+if __name__=='__main__':raise SystemExit(main())
