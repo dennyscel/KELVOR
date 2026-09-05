@@ -34,11 +34,12 @@ def main():
         else: raise SystemExit('scene/router not ready')
 
         # Measured from the real v020 run: primary at x12682, late double at x12790,
-        # ~517 ms later; v020 used 380/300 ms holds and overshot. Sweep the missing
-        # variable-jump interval plus horizontal braking around the target ledge.
+        # ~517 ms later; v020 used 380/300 ms holds and overshot. PlayerController
+        # source also shows a 420 ms runDelay, so each trial explicitly preserves the
+        # already-held direction state that exists in the natural campaign route.
         params=[]
-        for dh in [120,150,180,210,240,270,300]:
-            for bx in [12960,12985,13010,13035]:
+        for dh in [120,140,160,180,200,220,240]:
+            for bx in [12970,13005,13040]:
                 for ba in [-0.35,0.0,0.18]:
                     params.append({'doubleHoldMs':dh,'brakeX':bx,'brakeAxis':ba})
 
@@ -50,11 +51,12 @@ def main():
           if(s.autoplayRC37)s.autoplayRC37.status='DIAG_TUNER_PAUSED';
           if(s.autoPilot)s.autoPilot.status='DIAG_TUNER_PAUSED';
           async function trial(par,idx){
-            r.resetVirtual();
-            p.actor.setPosition(12682,cy(12690));p.body.reset(12682,cy(12690));p.body.setVelocity(0,0);
+            r.resetVirtual();p.actor.setPosition(12682,cy(12690));p.body.reset(12682,cy(12690));p.body.setVelocity(0,0);
             await sleep(150);r.resetVirtual();await sleep(50);
-            // Natural stage-2 landing telemetry showed vx ~= 118 immediately before launch.
-            p.body.setVelocityX(118);
+            // Natural stage-2 telemetry: vx ~=118 immediately before launch. The real
+            // route has already held right for far longer than runDelayMs=420, so do not
+            // restart the controller's walk-delay state between synthetic trial resets.
+            p.moveInputDir=1;p.moveHeldSince=s.time.now-1000;p.body.setVelocityX(118);
             const targetY=cy(13040),trace=[];let airborne=false,doubleDone=false,doubleUntil=0;
             const t0=performance.now(),primaryUntil=t0+380;
             r.setVirtualAxis(1,0);r.setVirtual('jump',true);
@@ -62,10 +64,7 @@ def main():
               await sleep(16);const now=performance.now(),x=p.x,y=p.y,vy=p.velocityY;
               if(!p.grounded)airborne=true;
               if(!doubleDone&&now>=primaryUntil)r.setVirtual('jump',false);
-              // Reproduce the measured v020 late-double location, but tune how long it is held.
-              if(airborne&&!doubleDone&&!p.grounded&&p.airJumpsRemaining>0&&x>=12790&&vy>50){
-                doubleDone=true;doubleUntil=now+par.doubleHoldMs;r.setVirtual('jump',true);
-              }
+              if(airborne&&!doubleDone&&!p.grounded&&p.airJumpsRemaining>0&&x>=12790&&vy>50){doubleDone=true;doubleUntil=now+par.doubleHoldMs;r.setVirtual('jump',true);}
               if(doubleDone&&now>=doubleUntil)r.setVirtual('jump',false);
               const axis=x<par.brakeX?1:par.brakeAxis;r.setVirtualAxis(axis,0);
               if(trace.length<170)trace.push({ms:Math.round(now-t0),x:+x.toFixed(2),y:+y.toFixed(2),vx:+p.velocityX.toFixed(2),vy:+vy.toFixed(2),g:!!p.grounded,air:p.airJumpsRemaining,axis,doubleDone});
@@ -82,7 +81,7 @@ def main():
         winners.sort(key=lambda r:(abs(r['landingX']-13040),r['elapsedMs']))
         counts={}
         for r in results: counts[r.get('result','UNKNOWN')]=counts.get(r.get('result','UNKNOWN'),0)+1
-        summary={'diagnostic_only':True,'counts_as_campaign_pass':False,'launch_state':{'x':12682,'platformX':12690,'initialVx':118,'primaryHoldMs':380,'doubleTriggerX':12790,'doubleVyMin':50},'trial_count':len(results),'result_counts':counts,'success_count':len(winners),'best':winners[:12]}
+        summary={'diagnostic_only':True,'counts_as_campaign_pass':False,'launch_state':{'x':12682,'platformX':12690,'initialVx':118,'moveHeldMs':1000,'runDelayMs':420,'primaryHoldMs':380,'doubleTriggerX':12790,'doubleVyMin':50},'trial_count':len(results),'result_counts':counts,'success_count':len(winners),'best':winners[:12]}
         (out/'TUNER_SUMMARY.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding='utf-8')
         (out/'TUNER_TRIALS.json').write_text(json.dumps(results,ensure_ascii=False,indent=2),encoding='utf-8')
         print(json.dumps(summary,ensure_ascii=False,indent=2))
