@@ -1,0 +1,152 @@
+name: KELVOR RC39 v004 Campaign - Windows
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      campaign_zip_url:
+        description: "HTTPS direct URL for RC39 v004 integrated campaign candidate"
+        required: true
+        type: string
+      campaign_zip_sha256:
+        description: "Expected SHA-256"
+        required: true
+        default: "77e50fde0ac6fc392237616d2842814a92a6d6d392a54487b38321c339b2d36e"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  campaign:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    env:
+      EXPECTED_ASSET: KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905.zip
+      EXPECTED_SHA256: 77e50fde0ac6fc392237616d2842814a92a6d6d392a54487b38321c339b2d36e
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Locate Google Chrome
+        shell: pwsh
+        run: |
+          $candidates = @(
+            "C:\Program Files\Google\Chrome\Application\chrome.exe",
+            "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+          )
+          $chrome = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $chrome) {
+            $cmd = Get-Command chrome.exe -ErrorAction SilentlyContinue
+            if ($cmd) { $chrome = $cmd.Source }
+          }
+          if (-not $chrome) { throw "Google Chrome not found" }
+          "CHROME_PATH=$chrome" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "Chrome: $chrome"
+
+      - name: Acquire and verify RC39 v004 candidate
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $out = "$env:RUNNER_TEMP\$env:EXPECTED_ASSET"
+          if ("${{ github.event_name }}" -eq "release") {
+            $releaseId = "${{ github.event.release.id }}"
+            if (-not $releaseId) { throw "Release id missing" }
+            $releaseJson = gh api "/repos/$env:GITHUB_REPOSITORY/releases/$releaseId"
+            $release = $releaseJson | ConvertFrom-Json
+            $asset = $release.assets | Where-Object { $_.name -eq $env:EXPECTED_ASSET } | Select-Object -First 1
+            if (-not $asset) {
+              throw "Release does not contain required asset: $env:EXPECTED_ASSET"
+            }
+            curl.exe --fail --location --silent --show-error `
+              -H "Authorization: Bearer $env:GH_TOKEN" `
+              -H "Accept: application/octet-stream" `
+              -H "X-GitHub-Api-Version: 2022-11-28" `
+              "https://api.github.com/repos/$env:GITHUB_REPOSITORY/releases/assets/$($asset.id)" `
+              --output "$out"
+            if ($LASTEXITCODE -ne 0) { throw "Release asset download failed" }
+            $expected = $env:EXPECTED_SHA256
+          } else {
+            python scripts/download_and_verify.py `
+              --url "${{ inputs.campaign_zip_url }}" `
+              --sha256 "${{ inputs.campaign_zip_sha256 }}" `
+              --output "$out"
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            $expected = "${{ inputs.campaign_zip_sha256 }}"
+          }
+          $got = (Get-FileHash -LiteralPath "$out" -Algorithm SHA256).Hash.ToLowerInvariant()
+          $expected = $expected.Trim().ToLowerInvariant()
+          Write-Host "candidate=$out"
+          Write-Host "bytes=$((Get-Item -LiteralPath $out).Length)"
+          Write-Host "sha256=$got"
+          if ($got -ne $expected) {
+            Remove-Item -LiteralPath "$out" -Force -ErrorAction SilentlyContinue
+            throw "SHA-256 mismatch: expected=$expected got=$got"
+          }
+          "CAMPAIGN_ZIP=$out" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Extract candidate
+        shell: pwsh
+        run: |
+          $dst = "$env:RUNNER_TEMP\kelvor-campaign-v004"
+          New-Item -ItemType Directory -Force -Path $dst | Out-Null
+          Expand-Archive -LiteralPath "$env:CAMPAIGN_ZIP" -DestinationPath $dst -Force
+          $root = Get-ChildItem -Path $dst -Directory | Where-Object { $_.Name -eq "KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905" } | Select-Object -First 1
+          if (-not $root) { throw "RC39 v004 candidate root not found" }
+          "CAMPAIGN_ROOT=$($root.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Verify internal package manifest
+        shell: pwsh
+        run: |
+          @'
+          from pathlib import Path
+          import hashlib, os
+          root=Path(os.environ['CAMPAIGN_ROOT'])
+          manifest=root/'SHA256SUMS.txt'
+          if not manifest.is_file():
+              raise SystemExit('SHA256SUMS.txt missing')
+          lines=[x for x in manifest.read_text(encoding='utf-8').splitlines() if x.strip()]
+          bad=[]
+          for line in lines:
+              h,rel=line.split('  ',1)
+              p=root/rel
+              if not p.is_file() or hashlib.sha256(p.read_bytes()).hexdigest()!=h:
+                  bad.append(rel)
+          print(f'internal hashes: {len(lines)} checked; bad={len(bad)}')
+          if bad:
+              print('\n'.join(bad[:20]))
+              raise SystemExit(1)
+          '@ | Set-Content -Encoding utf8 "$env:RUNNER_TEMP\verify_kelvor_manifest.py"
+          python "$env:RUNNER_TEMP\verify_kelvor_manifest.py"
+
+      - name: Run original RC39 v004 campaign Gauntlet in headless Chrome
+        shell: pwsh
+        run: |
+          $env:BROWSER = "python $env:GITHUB_WORKSPACE\scripts\ci_browser.py %s"
+          python "$env:CAMPAIGN_ROOT\RODAR_CAMPANHA_INTEGRADA_RC39_V004.py"
+          $code = $LASTEXITCODE
+          "CAMPAIGN_EXIT_CODE=$code" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "Original KELVOR runner exit code: $code"
+          exit 0
+
+      - name: Upload campaign evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: KELVOR-RC39-V004-CAMPAIGN-WINDOWS-${{ github.run_number }}
+          path: |
+            ${{ env.CAMPAIGN_ROOT }}/RESULTADOS_CAMPANHA_RC39_V004/**
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce original campaign verdict
+        if: always()
+        shell: pwsh
+        run: |
+          if (-not $env:CAMPAIGN_EXIT_CODE) { throw "Campaign runner did not record an exit code" }
+          if ([int]$env:CAMPAIGN_EXIT_CODE -ne 0) { exit [int]$env:CAMPAIGN_EXIT_CODE }
