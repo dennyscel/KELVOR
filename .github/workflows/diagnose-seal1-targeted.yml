@@ -4,7 +4,6 @@ on:
   push:
     paths:
       - 'scripts/diagnose_seal1_targeted.py'
-      - 'scripts/tune_seal1_stage2.py'
       - 'patches/75-campaign-autoplay-stability-rc39-v005.js'
       - 'patches/76-campaign-autoplay-stability-rc39-v006.js'
       - 'patches/79-campaign-autoplay-stability-rc39-v009.js'
@@ -14,6 +13,7 @@ on:
       - 'patches/90-campaign-autoplay-platform-timing-rc39-v020.js'
       - 'patches/91-campaign-autoplay-seal1-authored-route-rc39-v021.js'
       - 'patches/92-campaign-autoplay-seal1-edge-carry-rc39-v022.js'
+      - 'patches/93-campaign-autoplay-seal1-measured-stage2-rc39-v023.js'
       - '.github/workflows/diagnose-seal1-targeted.yml'
   workflow_dispatch:
 
@@ -23,7 +23,7 @@ permissions:
 jobs:
   seal-dawn:
     runs-on: windows-latest
-    timeout-minutes: 12
+    timeout-minutes: 10
     env:
       RELEASE_ID: '383144921'
       EXPECTED_ASSET: KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905.zip
@@ -63,12 +63,12 @@ jobs:
           if(-not $root){throw 'Candidate root missing'}
           "CAMPAIGN_ROOT=$($root.FullName)"|Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      - name: Apply current input-only diagnostic patches through v022
+      - name: Apply current input-only diagnostic patches through v023
         shell: pwsh
         run: |
           $runtimeDir="$env:CAMPAIGN_ROOT\web\release_v81_campaign_presentation_rc39_v004_20260905\src\runtime\v82"
           New-Item -ItemType Directory -Force -Path $runtimeDir|Out-Null
-          $files=@('75-campaign-autoplay-stability-rc39-v005.js','76-campaign-autoplay-stability-rc39-v006.js','79-campaign-autoplay-stability-rc39-v009.js','81-campaign-autoplay-stability-rc39-v011.js','83-campaign-autoplay-safe-route-rc39-v013.js','88-campaign-autoplay-platform-flow-rc39-v018.js','90-campaign-autoplay-platform-timing-rc39-v020.js','91-campaign-autoplay-seal1-authored-route-rc39-v021.js','92-campaign-autoplay-seal1-edge-carry-rc39-v022.js')
+          $files=@('75-campaign-autoplay-stability-rc39-v005.js','76-campaign-autoplay-stability-rc39-v006.js','79-campaign-autoplay-stability-rc39-v009.js','81-campaign-autoplay-stability-rc39-v011.js','83-campaign-autoplay-safe-route-rc39-v013.js','88-campaign-autoplay-platform-flow-rc39-v018.js','90-campaign-autoplay-platform-timing-rc39-v020.js','91-campaign-autoplay-seal1-authored-route-rc39-v021.js','92-campaign-autoplay-seal1-edge-carry-rc39-v022.js','93-campaign-autoplay-seal1-measured-stage2-rc39-v023.js')
           foreach($f in $files){Copy-Item "$env:GITHUB_WORKSPACE\patches\$f" "$runtimeDir\$f" -Force}
           $index="$env:CAMPAIGN_ROOT\web\index.html"
           $text=Get-Content -LiteralPath $index -Raw
@@ -81,27 +81,7 @@ jobs:
       - name: Install Selenium
         run: python -m pip install --disable-pip-version-check --quiet selenium
 
-      - name: Sweep real 12690 to 13040 physics
-        shell: pwsh
-        run: |
-          $out="$env:RUNNER_TEMP\seal1-stage2-tuner"
-          "TUNER_OUT=$out"|Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          python scripts/tune_seal1_stage2.py --web "$env:CAMPAIGN_ROOT\web" --chrome "$env:CHROME_PATH" --out "$out"
-          $code=$LASTEXITCODE
-          "TUNER_EXIT_CODE=$code"|Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          exit 0
-
-      - name: Upload tuner evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: KELVOR-RC39-SEAL1-STAGE2-TUNER-${{ github.run_number }}
-          path: ${{ env.TUNER_OUT }}/**
-          if-no-files-found: error
-          retention-days: 30
-
-      - name: Run targeted SEAL_DAWN diagnostic
-        continue-on-error: true
+      - name: Run natural targeted SEAL_DAWN diagnostic
         shell: pwsh
         run: |
           $out="$env:RUNNER_TEMP\seal-dawn-targeted"
@@ -114,12 +94,5 @@ jobs:
         with:
           name: KELVOR-RC39-SEAL-DAWN-TARGETED-${{ github.run_number }}
           path: ${{ env.DIAG_OUT }}/**
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 30
-
-      - name: Require at least one real stage2 landing
-        if: always()
-        shell: pwsh
-        run: |
-          if(-not $env:TUNER_EXIT_CODE){throw 'Tuner did not record an exit code'}
-          if([int]$env:TUNER_EXIT_CODE -ne 0){exit [int]$env:TUNER_EXIT_CODE}
