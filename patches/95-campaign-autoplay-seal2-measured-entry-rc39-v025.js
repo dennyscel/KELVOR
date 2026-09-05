@@ -20,7 +20,7 @@ proto.update=function(t){
   const seals=s.sealsCollectedRC37||0,gateB=gateAt(s,'GATE_B'),slime=enemyAt(s,12),flow=this.__seal2Flow;
   if(seals!==1||!gateB?.open||slime||!flow||flow.stage!==0||s.lifeCycle!=='active'||p.x<21380||p.x>22120)return oldUpdate.call(this,t);
 
-  if(!this.__seal2V025)this.__seal2V025={phase:'reposition',primary:false,double:false,attempts:0,retries:0,launchX:21655,doubleX:21765};
+  if(!this.__seal2V025)this.__seal2V025={phase:'reposition',primary:false,double:false,primaryAt:0,attempts:0,retries:0,launchX:21655,doubleX:21765};
   const n=this.__seal2V025,x=p.x,vy=p.velocityY;
 
   if(landed(s,p,21880)){
@@ -31,18 +31,16 @@ proto.update=function(t){
 
   if(n.phase==='reposition'){
     this.jumpUntil=0;this.attackUntil=0;
-    // Continuous authored ground exists here. Walk left far enough that the late
-    // double-jump condition has real horizontal room before the 21880 ledge.
     if(!p.grounded){drive(this,-.32,false);return;}
     if(x>21615){drive(this,-.82,false);return;}
-    n.phase='runup';n.primary=false;n.double=false;
+    n.phase='runup';n.primary=false;n.double=false;n.primaryAt=0;
     this.nextJumpAt=Math.min(this.nextJumpAt||0,t);
     this.log('seal2_v025_runup_ready',{x:Math.round(x)});drive(this,.98,false);return;
   }
 
   if(n.phase==='runup'){
     if(p.grounded&&!n.primary&&x>=n.launchX&&t>=this.nextJumpAt){
-      if(this.pulseJump(t,'seal2_v025_primary_to_21880',375)){n.primary=true;n.attempts++;}
+      if(this.pulseJump(t,'seal2_v025_primary_to_21880',375)){n.primary=true;n.primaryAt=t;n.attempts++;}
     }
     if(n.primary&&!n.double&&!p.grounded&&p.airJumpsRemaining>0&&x>=n.doubleX&&vy>40&&t>=this.nextJumpAt){
       if(this.pulseJump(t,'seal2_v025_double_to_21880',300))n.double=true;
@@ -50,11 +48,11 @@ proto.update=function(t){
     let axis=.98;
     if(x>=21872&&vy>0)axis=.15;
     if(x>=21912&&vy>0)axis=-.35;
-    // If a full attempt lands back on the continuous ground, recreate the safe
-    // approach rather than spamming impossible single jumps under the ledge.
     const cy=centerY(s,21880);
-    if(n.primary&&p.grounded&&cy!==null&&p.y>cy+55){
-      n.phase='reposition';n.primary=false;n.double=false;n.retries++;this.jumpUntil=0;
+    // A jump press is issued while the body still reports grounded in that same
+    // frame. Only call it a failed landing after at least 220ms of real flight time.
+    if(n.primary&&n.primaryAt>0&&t>=n.primaryAt+220&&p.grounded&&cy!==null&&p.y>cy+55){
+      n.phase='reposition';n.primary=false;n.double=false;n.primaryAt=0;n.retries++;this.jumpUntil=0;
       this.log('seal2_v025_ground_retry',{x:Math.round(x),retries:n.retries});drive(this,-.82,false);return;
     }
     drive(this,axis,false);return;
