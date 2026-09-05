@@ -1,0 +1,72 @@
+name: KELVOR Repository Checksum Sync
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'SHA256SUMS.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  checksums:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Rebuild SHA256SUMS from tracked files
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, subprocess
+          files=subprocess.check_output(['git','ls-files'], text=True).splitlines()
+          files=[f for f in files if f != 'SHA256SUMS.txt']
+          rows=[]
+          for rel in sorted(files):
+              p=Path(rel)
+              if not p.is_file():
+                  raise SystemExit(f'tracked file missing: {rel}')
+              rows.append(f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {rel}')
+          Path('SHA256SUMS.txt').write_text('\n'.join(rows)+'\n', encoding='utf-8')
+          print(f'{len(rows)} tracked files hashed')
+          PY
+
+      - name: Verify generated manifest
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          bad=[]
+          for line in Path('SHA256SUMS.txt').read_text(encoding='utf-8').splitlines():
+              if not line.strip(): continue
+              h,rel=line.split('  ',1)
+              p=Path(rel)
+              if not p.is_file() or hashlib.sha256(p.read_bytes()).hexdigest()!=h:
+                  bad.append(rel)
+          print('bad=',len(bad))
+          if bad:
+              print('\n'.join(bad))
+              raise SystemExit(1)
+          PY
+
+      - name: Commit checksum if changed
+        shell: bash
+        run: |
+          if git diff --quiet -- SHA256SUMS.txt; then
+            echo 'SHA256SUMS already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add SHA256SUMS.txt
+          git commit -m 'chore: sync repository SHA256SUMS'
+          git push origin HEAD:main
