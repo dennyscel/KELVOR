@@ -41,6 +41,21 @@ def main():
             time.sleep(.2)
             if d.execute_script("return !!(window.__KELVOR_W01_L01_RC37_SCENE__?.player && window.__KELVOR_W01_L01_RC37_SCENE__?.autoplayRC37);"):break
         else: raise SystemExit('scene/autoplay not ready')
+
+        geometry=d.execute_script("""
+          const cfg=arguments[0],s=window.__KELVOR_W01_L01_RC37_SCENE__,P=window.PlatformerSNESV04;
+          const lo=cfg.x-900,hi=cfg.x+1700;
+          const primitiveData=o=>{const src=o?.data?.list||{},out={};for(const [k,v] of Object.entries(src))if(v===null||['string','number','boolean'].includes(typeof v))out[k]=v;return out;};
+          const item=(o,idx=null)=>({idx,type:o?.constructor?.name||null,name:o?.name||null,x:Number.isFinite(o?.x)?o.x:null,y:Number.isFinite(o?.y)?o.y:null,displayWidth:Number.isFinite(o?.displayWidth)?o.displayWidth:null,displayHeight:Number.isFinite(o?.displayHeight)?o.displayHeight:null,texture:o?.texture?.key||null,frame:o?.frame?.name??null,active:o?.active??null,visible:o?.visible??null,data:primitiveData(o),body:o?.body?{x:o.body.x,y:o.body.y,width:o.body.width,height:o.body.height,enable:o.body.enable,immovable:o.body.immovable}:null});
+          const children=Array.from(s?.children?.list||[]).filter(o=>Number.isFinite(o?.x)&&o.x>=lo&&o.x<=hi).map(o=>item(o));
+          const enemies=(s?.enemies||[]).map((e,i)=>e?{idx:i,alive:!!e.alive,hp:e.hp??null,maxHp:e.maxHp??null,sprite:item(e.sprite,i)}:null).filter(e=>e?.sprite?.x>=lo&&e?.sprite?.x<=hi);
+          const platforms=s?.platformTopByX?Array.from(s.platformTopByX.entries()).filter(([x])=>x>=lo&&x<=hi).map(([x,top])=>({x,top,centerY:top-(P?.TUNING?.bodyHeight||0)/2})):[];
+          const seals=(s?.sealsRC37||[]).map(q=>({id:q.id,collected:!!q.collected,x:q.sprite?.x??null,y:q.sprite?.y??null})).filter(q=>q.x===null||(q.x>=lo&&q.x<=hi));
+          const hazards=(s?.hazards||[]).filter(h=>(h.right??-Infinity)>=lo&&(h.left??Infinity)<=hi).map(h=>({left:h.left??null,right:h.right??null,top:h.top??null,bottom:h.bottom??null,type:h.type??null}));
+          return {window:{lo,hi},tuning:P?.TUNING||null,platforms,seals,enemies,hazards,children};
+        """,{'x':a.start_x})
+        (out/'GEOMETRY.json').write_text(json.dumps(geometry,ensure_ascii=False,indent=2),encoding='utf-8')
+
         init=d.execute_script("""
           const cfg=arguments[0],s=window.__KELVOR_W01_L01_RC37_SCENE__,p=s.player;
           for(const id of cfg.precollect){const q=s.sealsRC37?.find(x=>x.id===id);if(q&&!q.collected){q.collected=true;q.sprite?.destroy();}}
@@ -63,7 +78,7 @@ def main():
             if snap.get('targetCollected'):result='TARGET_SEAL_COLLECTED';break
             if snap.get('life')=='gameover':result='GAME_OVER';break
             if (snap.get('x') or 0)>a.start_x+2500:result='TARGET_REGION_MISSED';break
-        summary={'diagnostic_only':True,'counts_as_campaign_pass':False,'target_id':a.target_id,'precollect':pre,'open_gates':gates,'result':result,'elapsed':round(time.monotonic()-start,2),'last':samples[-1] if samples else None}
+        summary={'diagnostic_only':True,'counts_as_campaign_pass':False,'target_id':a.target_id,'precollect':pre,'open_gates':gates,'result':result,'elapsed':round(time.monotonic()-start,2),'geometry_file':'GEOMETRY.json','last':samples[-1] if samples else None}
         (out/'SUMMARY.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding='utf-8');(out/'SAMPLES.json').write_text(json.dumps(samples,ensure_ascii=False,indent=2),encoding='utf-8');print(json.dumps(summary,ensure_ascii=False,indent=2))
         return 0 if result=='TARGET_SEAL_COLLECTED' else 1
     finally:
