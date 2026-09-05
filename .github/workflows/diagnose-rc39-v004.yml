@@ -7,6 +7,7 @@ on:
       - 'patches/75-campaign-autoplay-stability-rc39-v005.js'
       - 'patches/76-campaign-autoplay-stability-rc39-v006.js'
       - 'patches/77-campaign-autoplay-stability-rc39-v007.js'
+      - 'patches/78-campaign-autoplay-stability-rc39-v008.js'
       - '.github/workflows/diagnose-rc39-v004.yml'
   workflow_dispatch:
 
@@ -57,7 +58,7 @@ jobs:
           $root=Get-ChildItem -Path $dst -Directory | Where-Object { $_.Name -eq 'KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905' } | Select-Object -First 1
           if (-not $root) { throw 'Candidate root missing' }
           "CAMPAIGN_ROOT=$($root.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      - name: Apply RC39 v005+v006+v007 input-only autoplay patches to ephemeral diagnostic copy
+      - name: Apply RC39 v005+v006+v008 input-only autoplay patches to ephemeral diagnostic copy
         shell: pwsh
         run: |
           $release='release_v81_campaign_presentation_rc39_v004_20260905'
@@ -65,27 +66,27 @@ jobs:
           New-Item -ItemType Directory -Force -Path $runtimeDir | Out-Null
           Copy-Item "$env:GITHUB_WORKSPACE\patches\75-campaign-autoplay-stability-rc39-v005.js" "$runtimeDir\75-campaign-autoplay-stability-rc39-v005.js" -Force
           Copy-Item "$env:GITHUB_WORKSPACE\patches\76-campaign-autoplay-stability-rc39-v006.js" "$runtimeDir\76-campaign-autoplay-stability-rc39-v006.js" -Force
-          Copy-Item "$env:GITHUB_WORKSPACE\patches\77-campaign-autoplay-stability-rc39-v007.js" "$runtimeDir\77-campaign-autoplay-stability-rc39-v007.js" -Force
+          Copy-Item "$env:GITHUB_WORKSPACE\patches\78-campaign-autoplay-stability-rc39-v008.js" "$runtimeDir\78-campaign-autoplay-stability-rc39-v008.js" -Force
           $index="$env:CAMPAIGN_ROOT\web\index.html"
           $text=Get-Content -LiteralPath $index -Raw
           $needle='<script src="./src/runtime/v81/74-campaign-integrated-gauntlet-rc39-v004.js"></script>'
-          $insert='<script src="./src/runtime/v82/75-campaign-autoplay-stability-rc39-v005.js"></script>' + "`r`n" + '<script src="./src/runtime/v82/76-campaign-autoplay-stability-rc39-v006.js"></script>' + "`r`n" + '<script src="./src/runtime/v82/77-campaign-autoplay-stability-rc39-v007.js"></script>' + "`r`n" + $needle
+          $insert='<script src="./src/runtime/v82/75-campaign-autoplay-stability-rc39-v005.js"></script>' + "`r`n" + '<script src="./src/runtime/v82/76-campaign-autoplay-stability-rc39-v006.js"></script>' + "`r`n" + '<script src="./src/runtime/v82/78-campaign-autoplay-stability-rc39-v008.js"></script>' + "`r`n" + $needle
           if (-not $text.Contains($needle)) { throw 'Gauntlet script marker not found in index' }
           $text=$text.Replace($needle,$insert)
           Set-Content -LiteralPath $index -Value $text -Encoding utf8
       - name: Install Selenium
         run: python -m pip install --disable-pip-version-check --quiet selenium
-      - name: Run 180s browser diagnostic with v007 input-only patch
+      - name: Run 210s browser diagnostic with v008 input-only patch
         shell: pwsh
         run: |
           $out="$env:RUNNER_TEMP\rc39-diagnostic"
-          python scripts/diagnose_rc39_v004.py --web "$env:CAMPAIGN_ROOT\web" --chrome "$env:CHROME_PATH" --out "$out" --seconds 180
+          python scripts/diagnose_rc39_v004.py --web "$env:CAMPAIGN_ROOT\web" --chrome "$env:CHROME_PATH" --out "$out" --seconds 210
           "DIAG_OUT=$out" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Upload diagnostic evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: KELVOR-RC39-V007-AUTOPLAY-DIAGNOSTIC-${{ github.run_number }}
+          name: KELVOR-RC39-V008-AUTOPLAY-DIAGNOSTIC-${{ github.run_number }}
           path: ${{ env.DIAG_OUT }}/**
           if-no-files-found: error
           retention-days: 30
