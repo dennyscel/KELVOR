@@ -1,0 +1,39 @@
+{
+  "project": "KELVOR",
+  "artifact": "GITHUB_BOOTSTRAP",
+  "version": "v003",
+  "date": "2026-09-05",
+  "target_repository": "dennyscel/KELVOR",
+  "repository_creation": "CREATED_BY_OWNER_CONFIRMED_2026-09-05",
+  "workflows": [
+    ".github/workflows/bootstrap-selftest.yml",
+    ".github/workflows/qa84-windows.yml",
+    ".github/workflows/campaign-rc39-v003-windows.yml",
+    ".github/workflows/pages-deploy.yml"
+  ],
+  "known_inputs": {
+    "qa_v005": {
+      "file": "KELVOR_QA_84_RECOVERY_v005_20260905.zip",
+      "sha256": "c99e41fb9e77ce4b2664dcb04c2ab357f78775a5d4da16b0375b0eeacaa4d370"
+    },
+    "hero22_v010": {
+      "file": "KELVOR_HERO_P0_RUNTIME_LAB_RC38_CANDIDATE_v010_20260905.zip",
+      "sha256": "a791aaafdb2c770d1e7a3a49a300b93929e45a9e45dfac1345085f862a46bbe2"
+    },
+    "campaign_rc39_v003": {
+      "file": "KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v003_20260905.zip",
+      "sha256": "de512945b761a9423e68591e94b8bfad231498403a2aa253105cdbcebf324c86"
+    }
+  },
+  "release_locked": false,
+  "rules_changed": false,
+  "canonical_master_gap": "v022",
+  "repository_status": "CREATED_PRIVATE_MAIN",
+  "master_gap": "v022",
+  "selftest_workflow": ".github/workflows/bootstrap-selftest.yml",
+  "notes": [
+    "No large game ZIP is committed to Git history.",
+    "CI self-test proves localhost/Chrome infrastructure only; it is not a game PASS.",
+    "No workflow may emit LOCKED."
+  ]
+}
