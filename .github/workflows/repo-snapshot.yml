@@ -1,0 +1,62 @@
+name: KELVOR Repository Snapshot
+
+on:
+  workflow_run:
+    workflows: ["KELVOR Repository Checksum Sync"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Verify repository SHA256SUMS
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          bad=[]
+          rows=[x for x in Path('SHA256SUMS.txt').read_text(encoding='utf-8').splitlines() if x.strip()]
+          for row in rows:
+              h,rel=row.split('  ',1)
+              p=Path(rel)
+              if not p.is_file() or hashlib.sha256(p.read_bytes()).hexdigest()!=h:
+                  bad.append(rel)
+          print(f'{len(rows)} hashes verified; bad={len(bad)}')
+          if bad:
+              print('\n'.join(bad))
+              raise SystemExit(1)
+          PY
+
+      - name: Build exact repository snapshot
+        run: |
+          set -euo pipefail
+          COMMIT="$(git rev-parse HEAD)"
+          OUT="$RUNNER_TEMP/KELVOR_GITHUB_REPOSITORY_SNAPSHOT_${COMMIT}.zip"
+          git archive --format=zip --output="$OUT" HEAD
+          SHA="$(sha256sum "$OUT" | awk '{print $1}')"
+          echo "$SHA  $(basename "$OUT")" > "$OUT.sha256"
+          printf '{\n  "repository": "dennyscel/KELVOR",\n  "branch": "main",\n  "commit": "%s",\n  "snapshot": "%s",\n  "sha256": "%s",\n  "locked": false\n}\n' "$COMMIT" "$(basename "$OUT")" "$SHA" > "$RUNNER_TEMP/KELVOR_GITHUB_REPOSITORY_SNAPSHOT_MANIFEST.json"
+          echo "SNAPSHOT=$OUT" >> "$GITHUB_ENV"
+          echo "SNAPSHOT_SHA=$OUT.sha256" >> "$GITHUB_ENV"
+          echo "bytes=$(stat -c%s "$OUT") sha256=$SHA commit=$COMMIT"
+
+      - name: Upload exact snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: KELVOR-GITHUB-REPOSITORY-SNAPSHOT-${{ github.run_number }}
+          path: |
+            ${{ env.SNAPSHOT }}
+            ${{ env.SNAPSHOT_SHA }}
+            ${{ runner.temp }}/KELVOR_GITHUB_REPOSITORY_SNAPSHOT_MANIFEST.json
+          if-no-files-found: error
+          retention-days: 30
