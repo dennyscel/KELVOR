@@ -9,7 +9,7 @@ on:
       - 'patches/79-campaign-autoplay-stability-rc39-v009.js'
       - 'patches/81-campaign-autoplay-stability-rc39-v011.js'
       - 'patches/83-campaign-autoplay-safe-route-rc39-v013.js'
-      - 'patches/84-campaign-autoplay-objectives-retry-rc39-v014.js'
+      - 'patches/85-campaign-autoplay-precise-seals-rc39-v015.js'
       - '.github/workflows/diagnose-rc39-v004.yml'
   workflow_dispatch:
 
@@ -60,13 +60,13 @@ jobs:
           $root=Get-ChildItem -Path $dst -Directory | Where-Object { $_.Name -eq 'KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905' } | Select-Object -First 1
           if (-not $root) { throw 'Candidate root missing' }
           "CAMPAIGN_ROOT=$($root.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      - name: Apply RC39 v005+v006+v009+v011+v013+v014 input-only patches
+      - name: Apply RC39 v005+v006+v009+v011+v013+v015 input-only patches
         shell: pwsh
         run: |
           $release='release_v81_campaign_presentation_rc39_v004_20260905'
           $runtimeDir="$env:CAMPAIGN_ROOT\web\$release\src\runtime\v82"
           New-Item -ItemType Directory -Force -Path $runtimeDir | Out-Null
-          $files=@('75-campaign-autoplay-stability-rc39-v005.js','76-campaign-autoplay-stability-rc39-v006.js','79-campaign-autoplay-stability-rc39-v009.js','81-campaign-autoplay-stability-rc39-v011.js','83-campaign-autoplay-safe-route-rc39-v013.js','84-campaign-autoplay-objectives-retry-rc39-v014.js')
+          $files=@('75-campaign-autoplay-stability-rc39-v005.js','76-campaign-autoplay-stability-rc39-v006.js','79-campaign-autoplay-stability-rc39-v009.js','81-campaign-autoplay-stability-rc39-v011.js','83-campaign-autoplay-safe-route-rc39-v013.js','85-campaign-autoplay-precise-seals-rc39-v015.js')
           foreach($f in $files){Copy-Item "$env:GITHUB_WORKSPACE\patches\$f" "$runtimeDir\$f" -Force}
           $index="$env:CAMPAIGN_ROOT\web\index.html";$text=Get-Content -LiteralPath $index -Raw
           $needle='<script src="./src/runtime/v81/74-campaign-integrated-gauntlet-rc39-v004.js"></script>'
@@ -75,7 +75,7 @@ jobs:
           $text=$text.Replace($needle,$tags+"`r`n"+$needle);Set-Content -LiteralPath $index -Value $text -Encoding utf8
       - name: Install Selenium
         run: python -m pip install --disable-pip-version-check --quiet selenium
-      - name: Run terminal-state browser diagnostic with v014
+      - name: Run terminal-state browser diagnostic with v015
         shell: pwsh
         run: |
           $out="$env:RUNNER_TEMP\rc39-diagnostic"
@@ -85,7 +85,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: KELVOR-RC39-V014-AUTOPLAY-DIAGNOSTIC-${{ github.run_number }}
+          name: KELVOR-RC39-V015-AUTOPLAY-DIAGNOSTIC-${{ github.run_number }}
           path: ${{ env.DIAG_OUT }}/**
           if-no-files-found: error
           retention-days: 30
