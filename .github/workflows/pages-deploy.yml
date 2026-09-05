@@ -3,6 +3,9 @@ name: KELVOR Pages Preview
 on:
   release:
     types: [published]
+  push:
+    paths:
+      - '.github/workflows/pages-deploy.yml'
   workflow_dispatch:
     inputs:
       campaign_zip_url:
@@ -25,6 +28,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  RELEASE_ID: '383144921'
   EXPECTED_ASSET: KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905.zip
   EXPECTED_SHA256: 77e50fde0ac6fc392237616d2842814a92a6d6d392a54487b38321c339b2d36e
 
@@ -46,9 +50,19 @@ jobs:
         run: |
           set -euo pipefail
           OUT="$RUNNER_TEMP/$EXPECTED_ASSET"
-          if [ "${{ github.event_name }}" = "release" ]; then
-            RELEASE_ID="${{ github.event.release.id }}"
-            ASSET_ID="$(gh api "/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" --jq ".assets[] | select(.name == \"$EXPECTED_ASSET\") | .id" | head -n 1)"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            python scripts/download_and_verify.py \
+              --url "${{ inputs.campaign_zip_url }}" \
+              --sha256 "${{ inputs.campaign_zip_sha256 }}" \
+              --output "$OUT"
+            EXPECTED="${{ inputs.campaign_zip_sha256 }}"
+          else
+            if [ "${{ github.event_name }}" = "release" ]; then
+              RID="${{ github.event.release.id }}"
+            else
+              RID="$RELEASE_ID"
+            fi
+            ASSET_ID="$(gh api "/repos/$GITHUB_REPOSITORY/releases/$RID" --jq ".assets[] | select(.name == \"$EXPECTED_ASSET\") | .id" | head -n 1)"
             test -n "$ASSET_ID"
             curl --fail --location --silent --show-error \
               -H "Authorization: Bearer $GH_TOKEN" \
@@ -57,12 +71,6 @@ jobs:
               "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/assets/$ASSET_ID" \
               --output "$OUT"
             EXPECTED="$EXPECTED_SHA256"
-          else
-            python scripts/download_and_verify.py \
-              --url "${{ inputs.campaign_zip_url }}" \
-              --sha256 "${{ inputs.campaign_zip_sha256 }}" \
-              --output "$OUT"
-            EXPECTED="${{ inputs.campaign_zip_sha256 }}"
           fi
           GOT="$(sha256sum "$OUT" | awk '{print $1}')"
           echo "bytes=$(stat -c%s "$OUT")"
@@ -82,7 +90,10 @@ jobs:
           touch "$RUNNER_TEMP/site/.nojekyll"
           test -f "$RUNNER_TEMP/site/index.html"
 
-      - uses: actions/configure-pages@v5
+      - name: Configure or enable Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ runner.temp }}/site
