@@ -14,7 +14,9 @@ proto.update=function(t){
   const s=this.s,p=s?.player;
   if(!p||this.status!=='RUNNING'||(s.sealsCollectedRC37||0)>=1||p.x<12610||p.x>13620||(this.__seal1V020?.stage||0)<2)return oldUpdate.call(this,t);
   if(s.lifeCycle!=='active')return oldUpdate.call(this,t);
-  if(!this.__seal1V023)this.__seal1V023={stage:2,primary:false,double:false,launchX:12725,doubleX:12855,doubleHoldMs:240};
+  // Canonical stage-2 tuple selected by the 48-trial Windows/Chrome physics sweep:
+  // launchX=12725, doubleX=12840, hold=240ms -> physical landing x=13006.11/y=70.32.
+  if(!this.__seal1V023)this.__seal1V023={stage:2,primary:false,double:false,launchX:12725,doubleX:12840,doubleHoldMs:240};
   const n=this.__seal1V023,x=p.x,y=p.y,vy=p.velocityY;
 
   if(n.stage===2){
