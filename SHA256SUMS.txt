@@ -1,7 +1,7 @@
 16ebe0a1b6ba8b2fe8dfea335da3b6cdd4be242b86364bcff38fba1b1a499af3  .github/workflows/bootstrap-selftest.yml
 8134c7af1470f35315081df47abb3bcd786d0b0d692f934bf1f160179837517e  .github/workflows/campaign-rc39-v003-windows.yml
 ccff998492dd15227d1c2e40da3285c51b1950bbe93c94caf834fba933366f69  .github/workflows/campaign-rc39-v004-windows.yml
-327d40f243b6c68e8feb0c00a314ee6564510c00b5f6e035eb9bf6ad51d0f761  .github/workflows/diagnose-rc39-v004.yml
+5ace8e2934fcf80c6a3d174eaf4aa329d5f26c89af7027c293a144d34fa6e70e  .github/workflows/diagnose-rc39-v004.yml
 583c3808d9eca6e2d3ea21e1c3dd931fbdbaa050f63928631565c653fb183571  .github/workflows/pages-deploy.yml
 740a36f08c0c30363389fddf2220a5afe973d26174c0fd3dda4446baa479f465  .github/workflows/prepare-rc39-v004-release.yml
 5eb0c55638ceb3dd6775b861c0e8f67cb6e1599698e5323b19fe8831d8817f30  .github/workflows/qa84-windows.yml
