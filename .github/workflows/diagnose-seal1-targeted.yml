@@ -89,7 +89,7 @@ jobs:
         run: |
           $out="$env:RUNNER_TEMP\post-dawn-to-spirit"
           "DIAG_OUT=$out"|Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          python scripts/diagnose_seal_targeted.py --web "$env:CAMPAIGN_ROOT\web" --chrome "$env:CHROME_PATH" --out "$out" --target-id SEAL_SPIRIT --start-x 13220 --precollect SEAL_DAWN --open-gates GATE_A --seconds 150
+          python scripts/diagnose_seal_targeted.py --web "$env:CAMPAIGN_ROOT\web" --chrome "$env:CHROME_PATH" --out "$out" --target-id SEAL_SPIRIT --start-x 13220 --precollect SEAL_DAWN --open-gates GATE_A --seconds 150 --miss-x 22600
 
       - name: Upload targeted evidence
         if: always()
