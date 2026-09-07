@@ -1,0 +1,74 @@
+Você está assumindo a continuidade do projeto KELVOR.
+
+FONTE CANÔNICA DE CONTINUIDADE:
+Google Drive > KELVOR > KELVOR_MASTER_HANDOFF_20260907.
+Leia primeiro `00_START_HERE` e o `KELVOR_MASTER_HANDOFF_20260907.md`. Depois inspecione o snapshot completo do repositório e os artefatos de QA antes de modificar qualquer arquivo.
+
+OBJETIVO DO OWNER:
+Transformar o KELVOR, que ainda é medíocre/inconsistente em vários aspectos, em um jogo com sensação de Triplo AAA dentro das limitações técnicas/artísticas do projeto. Não aceitar “funciona” como suficiente. O jogo precisa de vida, lógica, direção de arte, feedback e refinamento dentro e fora do gameplay.
+
+REGRA DE QA INEGOCIÁVEL:
+- trabalhar em candidato;
+- smoke técnico;
+- smoke visual em Chrome real;
+- portrait + landscape + desktop + viewport pequena;
+- repetir rotação, reload, resize e reentrada;
+- revisar manualmente todas as screenshots;
+- cada tela/bloco crítico >= 9,0/10;
+- zero hard-fail;
+- publicar no Pages;
+- fazer smoke na versão pública;
+- só então avançar.
+Se o Owner mandar print físico mostrando defeito, reabrir o bloco mesmo que a automação anterior tenha PASS/10. Os prints reais do celular têm prioridade.
+
+VISÃO NOVA DO MAPA-MÚNDI:
+O mapa deve evoluir para fullscreen e vivo, inspirado estruturalmente em overworlds como Super Mario World / Donkey Kong Country, sem copiar assets.
+- não mostrar 100% do mapa o tempo todo;
+- câmera mais próxima do personagem e da região atual;
+- personagem anda fisicamente no mapa entre caminhos/nós;
+- câmera acompanha e revela setores para cima/baixo/lados;
+- ao entrar em um mundo novo, primeiro mostrar o mapa inteiro de forma cinematográfica, com nome do mundo em texto animado e efeitos, depois aproximar para a posição atual;
+- repetir o processo ao trocar de mundo;
+- mapa com água, partículas, folhas, nuvens, criaturas/ambientação, portais, construções, luz e animações coerentes;
+- a vida do jogo não pode existir apenas durante o gameplay.
+
+POLIMENTO OBRIGATÓRIO EM TODAS AS FASES:
+- chave + porta com lógica;
+- guardiões/requisito liberam chave física/rúnica;
+- porta sem chave comunica claramente;
+- chave é inserida/girada e a porta realmente abre com efeito lúdico coerente;
+- nada de porta sumir/translucidar sem lógica;
+- ravinas/buracos com profundidade, paredes, raízes, pedras, névoa/sombra;
+- objetos sólidos com colisões coerentes;
+- densidade melhor de cenário/inimigos sem poluição;
+- trepadeiras com suporte visual e escalada real;
+- chão, blocos e colisão coerentes com os pés do Kelvor;
+- nenhuma sensação de personagem flutuando sobre o solo;
+- identidade visual própria para cada seção;
+- screenshots dedicadas de pits, gates, cipós, plataformas altas, arenas, checkpoints e final.
+
+ESTADO ATUAL IMPORTANTE:
+- GitHub repo: dennyscel/KELVOR
+- Pages: https://dennyscel.github.io/KELVOR/
+- cadeia responsiva v039→v045 é o baseline atual de Menu/Mapa;
+- gate v045: smoke amplo 10/10 técnico + secundário 6/6 + revisão visual interna ~9,15/10;
+- v045 foi promovido ao workflow de Pages;
+- porém o mapa v045 NÃO é a visão final: a visão fullscreen viva acima a substitui como próximo grande objetivo;
+- câmera/fundo vertical da Fase 1 foi corrigido em v032/v033;
+- W01-L01 rebuild candidatos v036/v037/v038 existem, mas foram congelados enquanto UI/Mapa eram reabertos;
+- v036 recebeu ~7,8/10 visual; v037 ~8,5/10; não promover automaticamente;
+- RC39 ainda NÃO está LOCKED;
+- DAWN e SPIRIT já têm evidências naturais; GUARDIAN tem PASS isolado; campanha completa/goal e gates finais continuam pendentes.
+
+REGRAS DE ESCOPO:
+Não altere silenciosamente física, HP, hitbox, velocidade, timing de golpes ou critérios de PASS só para o teste ficar verde. Targeted/teleport/accelerated QA nunca equivale a campaign natural PASS.
+
+PRIMEIRAS AÇÕES:
+1. Ler o Drive handoff completo.
+2. Conferir o HEAD atual do GitHub antes de qualquer write.
+3. Confirmar public smoke do Pages atual.
+4. Projetar e implementar a próxima versão do mapa vivo fullscreen em candidato.
+5. Iterar até >=9/10 em todos os formatos e public smoke.
+6. Só depois retomar W01-L01 Visual & Interaction Rebuild e levar a Fase 1 a >=9/10.
+
+Não peça ao Owner para testar cada detalhe. A responsabilidade principal de QA é sua; o Owner deve poder apenas pedir “prossiga” confiando que você não avançará abaixo de 9/10.
