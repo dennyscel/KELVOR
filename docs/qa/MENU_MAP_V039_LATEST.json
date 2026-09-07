@@ -1,9 +1,10 @@
 {
-  "gate": "MENU_MAP_V043",
-  "run_id": "34101312474",
-  "run_number": "8",
-  "head_sha": "9d9dbb6fa9bbde488fec9b37088da6bf086185c0",
+  "gate": "MENU_MAP_V044",
+  "run_id": "34101878734",
+  "run_number": "9",
+  "head_sha": "74e223f7956151b2b1224c69b28e932f139971e0",
   "smoke_outcome": "success",
+  "secondary_outcome": "success",
   "result": {
     "checks": {
       "menu_portrait_exclusive": true,
@@ -88,7 +89,7 @@
       "hero": {
         "scale": 1.24,
         "x": 320,
-        "y": 429.2408110500423
+        "y": 429.34253344145026
       },
       "ori": "portrait",
       "story": true,
@@ -102,10 +103,10 @@
       "back": true,
       "exclusive": true,
       "h": 999.68,
-      "max": 624.8,
+      "max": 664.7872,
       "min": 164.9472,
-      "noteY": 624.8,
-      "span": 459.85279999999995,
+      "noteY": 664.7872,
+      "span": 499.84,
       "v42": {
         "portraitReflow": true
       }
@@ -227,5 +228,14 @@
       "w": 640
     },
     "technical_score": 10.0
+  },
+  "secondary": {
+    "checks": {
+      "menu_story": true,
+      "options_v044": true,
+      "music_v044": true,
+      "credits_v044": true
+    },
+    "status": "PASS"
   }
 }
