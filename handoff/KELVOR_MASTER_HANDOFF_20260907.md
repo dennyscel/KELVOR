@@ -130,3 +130,5 @@ Nenhum objeto visual importante deve existir sem explicar a própria função:
 - recompensa implica motivo para exploração.
 
 O objetivo final é um KELVOR com sensação de produto acabado, não protótipo funcional.
+
+<!-- trigger complete Drive handoff bundle build 2026-09-07 -->
