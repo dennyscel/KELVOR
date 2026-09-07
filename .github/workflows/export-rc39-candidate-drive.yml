@@ -66,3 +66,5 @@ jobs:
           git add docs/qa/DRIVE_RC39_EXPORT_LATEST.json
           git commit -m 'qa: record RC39 Drive export artifact'
           git push origin HEAD:main
+
+# trigger: 2026-09-07 Drive handoff
