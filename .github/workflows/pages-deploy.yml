@@ -4,6 +4,7 @@ on:
   release:
     types: [published]
   push:
+    branches: [main]
     paths:
       - 'patches/101-owner-mobile-visual-feedback-rc39-v031.js'
       - 'patches/102-owner-experience-rc39-v032.js'
@@ -17,6 +18,11 @@ on:
       - 'patches/113-menu-secondary-final-polish-v043.js'
       - 'patches/114-secondary-screens-finish-v044.js'
       - 'patches/115-secondary-cleanup-v045.js'
+      - 'patches/116-world-map-model-v046.js'
+      - 'patches/117-world-map-scene-v046.js'
+      - 'assets/world-map/**'
+      - 'scripts/build_living_map.py'
+      - 'tests/world-map-*.test.cjs'
       - '.github/workflows/pages-deploy.yml'
   workflow_dispatch:
     inputs:
@@ -67,6 +73,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify living map model and scene integration
+        run: node --test tests/world-map-model.test.cjs tests/world-map-scene.test.cjs
 
       - name: Acquire and verify RC39 v004 candidate
         env:
@@ -96,13 +107,13 @@ jobs:
       - name: Build static Pages payload + promoted owner patches
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/candidate" "$RUNNER_TEMP/site"
+          mkdir -p "$RUNNER_TEMP/candidate" "$RUNNER_TEMP/baseline-v045"
           unzip -q "$CAMPAIGN_ZIP" -d "$RUNNER_TEMP/candidate"
           ROOT="$(find "$RUNNER_TEMP/candidate" -maxdepth 1 -type d -name 'KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905' | head -n 1)"
           test -n "$ROOT"
           test -f "$ROOT/web/index.html"
-          cp -a "$ROOT/web/." "$RUNNER_TEMP/site/"
-          REL="$RUNNER_TEMP/site/release_v81_campaign_presentation_rc39_v004_20260905"
+          cp -a "$ROOT/web/." "$RUNNER_TEMP/baseline-v045/"
+          REL="$RUNNER_TEMP/baseline-v045/release_v81_campaign_presentation_rc39_v004_20260905"
           mkdir -p "$REL/src/runtime/v82"
           PATCHES=(
             "$OWNER_VISUAL_PATCH"
@@ -119,7 +130,7 @@ jobs:
             "$SECONDARY_CLEANUP_PATCH"
           )
           for PATCH in "${PATCHES[@]}"; do cp "$GITHUB_WORKSPACE/patches/$PATCH" "$REL/src/runtime/v82/$PATCH"; done
-          python - "$RUNNER_TEMP/site/index.html" "${PATCHES[@]}" <<'PY'
+          python - "$RUNNER_TEMP/baseline-v045/index.html" "${PATCHES[@]}" <<'PY'
           import sys
           from pathlib import Path
           p=Path(sys.argv[1]); names=sys.argv[2:]; text=p.read_text(encoding='utf-8')
@@ -131,8 +142,32 @@ jobs:
           if tags:
               text=text.replace('</body>','\n'.join(tags)+'\n</body>');p.write_text(text,encoding='utf-8')
           PY
-          touch "$RUNNER_TEMP/site/.nojekyll"
-          for PATCH in "${PATCHES[@]}"; do grep -F "$PATCH" "$RUNNER_TEMP/site/index.html"; test -f "$REL/src/runtime/v82/$PATCH"; done
+          touch "$RUNNER_TEMP/baseline-v045/.nojekyll"
+          for PATCH in "${PATCHES[@]}"; do grep -F "$PATCH" "$RUNNER_TEMP/baseline-v045/index.html"; test -f "$REL/src/runtime/v82/$PATCH"; done
+
+      - name: Build v046 mobile preview alongside the preserved v045 URL
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/site"
+          cp -a "$RUNNER_TEMP/baseline-v045/." "$RUNNER_TEMP/site/"
+          python scripts/build_living_map.py \
+            --baseline "$RUNNER_TEMP/baseline-v045" \
+            --output "$RUNNER_TEMP/site/v046" \
+            --repo "$GITHUB_WORKSPACE"
+          python - "$RUNNER_TEMP/site/v046" "$GITHUB_SHA" <<'PY'
+          import json, sys
+          from pathlib import Path
+          root=Path(sys.argv[1])
+          report=json.loads((root/'LIVING_MAP_BUILD_REPORT.json').read_text(encoding='utf-8'))
+          info={'candidate':'v046','commit':sys.argv[2],'payload_sha256':report['candidate']['tree_sha256'],'visual_approval':'pending'}
+          (root/'deployment.json').write_text(json.dumps(info,indent=2)+'\n',encoding='utf-8')
+          html=(root/'index.html').read_text(encoding='utf-8')
+          names=['115-secondary-cleanup-v045.js','116-world-map-model-v046.js','117-world-map-scene-v046.js']
+          positions=[html.index(name) for name in names]
+          assert positions==sorted(positions), 'Map patches out of order'
+          assert (root/report['release_dir']/'assets/world-map/w01-living-map-v046.png').is_file()
+          print('Public candidate path: /v046/; build',info)
+          PY
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
