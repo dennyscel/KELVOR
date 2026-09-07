@@ -35,15 +35,19 @@ function fullscreenButton(scene,w,portrait){
 function addBackdrop(scene,portrait,variant='menu'){
   const w=scene.scale.width,h=scene.scale.height;
   scene.cameras.main.setBackgroundColor(variant==='map'?'#061522':'#081a2a');
-  const skyTop=scene.add.rectangle(w/2,h*.22,w,h*.44,variant==='map'?0x0b2639:0x173f60,1).setDepth(-100);
-  const skyBottom=scene.add.rectangle(w/2,h*.72,w,h*.58,variant==='map'?0x061522:0x0a2236,1).setDepth(-99);
-  const farH=portrait?Math.round(h*.26):Math.round(h*.43);
-  const midH=portrait?Math.round(h*.22):Math.round(h*.34);
-  const nearH=portrait?Math.round(h*.18):Math.round(h*.27);
-  const far=scene.add.tileSprite(0,h,w,farH,P.PARALLAX_FAR).setOrigin(0,1).setAlpha(variant==='map'?.24:.66).setDepth(-80);
-  const mid=scene.add.tileSprite(0,h,w,midH,P.PARALLAX_MID).setOrigin(0,1).setAlpha(variant==='map'?.18:.73).setDepth(-79);
-  const near=scene.add.tileSprite(0,h,w,nearH,P.PARALLAX_NEAR).setOrigin(0,1).setAlpha(variant==='map'?.15:.82).setDepth(-78);
-  const shade=scene.add.rectangle(w/2,h/2,w,h,0x03111c,variant==='map'?.28:.12).setDepth(-70);
+  const sky=scene.add.graphics().setDepth(-100);
+  const top=variant==='map'?0x0a2538:0x173f60,bottom=variant==='map'?0x061522:0x081a2a;
+  sky.fillGradientStyle(top,top,bottom,bottom,1);sky.fillRect(0,0,w,h);
+  const farH=portrait?Math.round(h*.22):Math.round(h*.43);
+  const midH=portrait?Math.round(h*.20):Math.round(h*.34);
+  const nearH=portrait?Math.round(h*.22):Math.round(h*.27);
+  const farAlpha=portrait?(variant==='map'?.08:0):(variant==='map'?.24:.66);
+  const midAlpha=portrait?(variant==='map'?.07:0):(variant==='map'?.18:.73);
+  const nearAlpha=portrait?(variant==='map'?.13:.76):(variant==='map'?.15:.82);
+  const far=scene.add.tileSprite(0,h,w,farH,P.PARALLAX_FAR).setOrigin(0,1).setAlpha(farAlpha).setDepth(-80);
+  const mid=scene.add.tileSprite(0,h,w,midH,P.PARALLAX_MID).setOrigin(0,1).setAlpha(midAlpha).setDepth(-79);
+  const near=scene.add.tileSprite(0,h,w,nearH,P.PARALLAX_NEAR).setOrigin(0,1).setAlpha(nearAlpha).setDepth(-78);
+  const shade=scene.add.rectangle(w/2,h/2,w,h,0x03111c,variant==='map'?.24:.08).setDepth(-70);
   const motes=[];
   if(P.GameSettingsV10?.get?.('menuMotion')!==false){
     const count=portrait?12:18;
@@ -53,12 +57,13 @@ function addBackdrop(scene,portrait,variant='menu'){
       motes.push(c);
     }
   }
-  return {skyTop,skyBottom,far,mid,near,shade,motes};
+  return {sky,far,mid,near,shade,motes};
 }
 
 const Menu=P.MainMenuSceneV10;
 if(Menu){
   Menu.prototype.create=function(){
+    this.__v039RestartQueued=false;
     document.documentElement.dataset.kelvorScreen='main-menu';
     const w=this.scale.width,h=this.scale.height,portrait=isPortrait(this);
     const bg=addBackdrop(this,portrait,'menu');
@@ -199,6 +204,7 @@ if(WM){
     this.tweens.add({targets:this.hero,x,y:y-23*k,duration:240,ease:'Sine.easeInOut',onComplete:()=>{this.busy=false;}});
   };
   WM.create=function(){
+    this.__v039RestartQueued=false;
     document.documentElement.dataset.kelvorScreen='world-map';
     this.save=P.KelvorCampaignRC1.load();this.world=this.save.currentWorld||'W01';if(!this.save.worlds[this.world]?.unlocked)this.world='W01';
     const p=(this.save.selected||'W01_L01').split('_');this.selected=(p[0]===this.world&&this.save.worlds[this.world].nodes[p.slice(1).join('_')]!=='LOCKED')?p.slice(1).join('_'):'L01';
