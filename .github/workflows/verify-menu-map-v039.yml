@@ -1,9 +1,10 @@
-name: KELVOR RC39 Menu Map Responsive v039
+name: KELVOR RC39 Menu Map Responsive v039-v040
 
 on:
   push:
     paths:
       - 'patches/109-menu-map-responsive-rebuild-v039.js'
+      - 'patches/110-menu-map-responsive-hotfix-v040.js'
       - 'scripts/verify_menu_map_v039.py'
       - '.github/workflows/verify-menu-map-v039.yml'
   workflow_dispatch:
@@ -25,6 +26,7 @@ jobs:
       PATCH34: 104-menu-map-polish-rc39-v034.js
       PATCH35: 105-menu-map-polish-rc39-v035.js
       PATCH39: 109-menu-map-responsive-rebuild-v039.js
+      PATCH40: 110-menu-map-responsive-hotfix-v040.js
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -63,13 +65,13 @@ jobs:
           $root=Get-ChildItem -Path $dst -Directory | Where-Object {$_.Name -eq 'KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905'} | Select-Object -First 1
           if(-not $root){throw 'Candidate root missing'}
           "WEB_ROOT=$($root.FullName)\web" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      - name: Inject promoted owner chain plus v039 candidate
+      - name: Inject responsive chain through v040
         shell: pwsh
         run: |
           $rel="$env:WEB_ROOT\release_v81_campaign_presentation_rc39_v004_20260905"
           $runtime="$rel\src\runtime\v82"
           New-Item -ItemType Directory -Force -Path $runtime | Out-Null
-          $patches=@($env:PATCH31,$env:PATCH32,$env:PATCH33,$env:PATCH34,$env:PATCH35,$env:PATCH39)
+          $patches=@($env:PATCH31,$env:PATCH32,$env:PATCH33,$env:PATCH34,$env:PATCH35,$env:PATCH39,$env:PATCH40)
           foreach($p in $patches){Copy-Item "$env:GITHUB_WORKSPACE\patches\$p" "$runtime\$p" -Force}
           $index="$env:WEB_ROOT\index.html"
           $text=Get-Content -LiteralPath $index -Raw
@@ -83,11 +85,11 @@ jobs:
         continue-on-error: true
         shell: pwsh
         run: python scripts/verify_menu_map_v039.py --web "$env:WEB_ROOT" --chrome "$env:CHROME_PATH" --out "$env:RESULT_DIR"
-      - name: Upload v039 visual evidence
+      - name: Upload responsive visual evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: KELVOR-RC39-MENU-MAP-V039-${{ github.run_number }}
+          name: KELVOR-RC39-MENU-MAP-V040-${{ github.run_number }}
           path: ${{ env.RESULT_DIR }}/**
           if-no-files-found: error
           retention-days: 30
@@ -103,7 +105,7 @@ jobs:
           $raw = if(Test-Path "$env:RESULT_DIR\RESULT.json"){Get-Content -LiteralPath "$env:RESULT_DIR\RESULT.json" -Raw}else{'{"status":"NO_RESULT"}'}
           try{$obj=$raw|ConvertFrom-Json}catch{$obj=[ordered]@{status='INVALID_RESULT';raw=$raw}}
           $meta=[ordered]@{
-            gate='MENU_MAP_V039'
+            gate='MENU_MAP_V039_V040'
             run_id='${{ github.run_id }}'
             run_number='${{ github.run_number }}'
             head_sha='${{ github.sha }}'
@@ -112,9 +114,9 @@ jobs:
           }
           $meta|ConvertTo-Json -Depth 30|Set-Content -LiteralPath docs/qa/MENU_MAP_V039_LATEST.json -Encoding utf8
           git add docs/qa/MENU_MAP_V039_LATEST.json
-          if(-not (git diff --cached --quiet)){git commit -m "qa: record v039 menu map gate run ${{ github.run_number }}";git push origin HEAD:main}
+          if(-not (git diff --cached --quiet)){git commit -m "qa: record v040 menu map gate run ${{ github.run_number }}";git push origin HEAD:main}
       - name: Enforce smoke result
         if: always()
         shell: pwsh
         run: |
-          if('${{ steps.smoke.outcome }}' -ne 'success'){throw 'v039 smoke failed'}
+          if('${{ steps.smoke.outcome }}' -ne 'success'){throw 'v040 smoke failed'}
