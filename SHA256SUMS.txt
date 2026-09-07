@@ -30,6 +30,7 @@ e1313f6cec4cd2550522399056d6048a21e35c4f292591365b643a8dfcf8c6a2  docs/RC39_V027
 1aea24f7b30689aeb880d4622c8086e64cef31ebec5307961ba78d6dccc2e9d2  patches/100-campaign-autoplay-ancient-crossing-stable-rc39-v030.js
 fef420fc5bd4d30e0e5256b630b8bd291c9ff82cd1a86b0003c9b38242026a81  patches/101-owner-mobile-visual-feedback-rc39-v031.js
 224f87614c4b89cf553d49b5a6036ec36301d2ba5aa973dfaa8030dffd718ba1  patches/102-owner-experience-rc39-v032.js
+73e26ad58f9adcfd59b0ffe2d74e85eb519138ea5f7460caf093907ac1d3a46b  patches/103-owner-experience-gate-hotfix-rc39-v033.js
 2a8633e6357c5968b91c1c072ddea1b2b688b0e863fd2cc897b825f3f7dcd499  patches/75-campaign-autoplay-stability-rc39-v005.js
 f765dd580bc501728f745812ebf79d5c897b0a74537affc11aa0aee32100d672  patches/76-campaign-autoplay-stability-rc39-v006.js
 be4c6fae8e9f05981127acba9dd4f357d04040e1d1a03bc1151bbf5824bc61ee  patches/77-campaign-autoplay-stability-rc39-v007.js
