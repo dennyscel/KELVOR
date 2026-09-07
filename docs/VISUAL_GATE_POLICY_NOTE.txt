@@ -1,0 +1,1 @@
+Do not promote below 9.0/10 visual/UX score. See QA_VISUAL_9_OF_10_GATE.md.
