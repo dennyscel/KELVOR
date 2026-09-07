@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   verify:
@@ -79,6 +79,8 @@ jobs:
       - name: Install Selenium
         run: python -m pip install --disable-pip-version-check --quiet selenium
       - name: Run repeated portrait-landscape-reentry-reload smoke
+        id: smoke
+        continue-on-error: true
         shell: pwsh
         run: python scripts/verify_menu_map_v039.py --web "$env:WEB_ROOT" --chrome "$env:CHROME_PATH" --out "$env:RESULT_DIR"
       - name: Upload v039 visual evidence
@@ -89,3 +91,30 @@ jobs:
           path: ${{ env.RESULT_DIR }}/**
           if-no-files-found: error
           retention-days: 30
+      - name: Publish compact gate pointer
+        if: always()
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git rebase origin/main
+          New-Item -ItemType Directory -Force -Path docs/qa | Out-Null
+          $raw = if(Test-Path "$env:RESULT_DIR\RESULT.json"){Get-Content -LiteralPath "$env:RESULT_DIR\RESULT.json" -Raw}else{'{"status":"NO_RESULT"}'}
+          try{$obj=$raw|ConvertFrom-Json}catch{$obj=[ordered]@{status='INVALID_RESULT';raw=$raw}}
+          $meta=[ordered]@{
+            gate='MENU_MAP_V039'
+            run_id='${{ github.run_id }}'
+            run_number='${{ github.run_number }}'
+            head_sha='${{ github.sha }}'
+            smoke_outcome='${{ steps.smoke.outcome }}'
+            result=$obj
+          }
+          $meta|ConvertTo-Json -Depth 30|Set-Content -LiteralPath docs/qa/MENU_MAP_V039_LATEST.json -Encoding utf8
+          git add docs/qa/MENU_MAP_V039_LATEST.json
+          if(-not (git diff --cached --quiet)){git commit -m "qa: record v039 menu map gate run ${{ github.run_number }}";git push origin HEAD:main}
+      - name: Enforce smoke result
+        if: always()
+        shell: pwsh
+        run: |
+          if('${{ steps.smoke.outcome }}' -ne 'success'){throw 'v039 smoke failed'}
