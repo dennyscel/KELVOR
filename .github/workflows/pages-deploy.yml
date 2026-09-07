@@ -10,6 +10,13 @@ on:
       - 'patches/103-owner-experience-gate-hotfix-rc39-v033.js'
       - 'patches/104-menu-map-polish-rc39-v034.js'
       - 'patches/105-menu-map-polish-rc39-v035.js'
+      - 'patches/109-menu-map-responsive-rebuild-v039.js'
+      - 'patches/110-menu-map-responsive-hotfix-v040.js'
+      - 'patches/111-menu-map-premium-portrait-v041.js'
+      - 'patches/112-menu-map-secondary-polish-v042.js'
+      - 'patches/113-menu-secondary-final-polish-v043.js'
+      - 'patches/114-secondary-screens-finish-v044.js'
+      - 'patches/115-secondary-cleanup-v045.js'
       - '.github/workflows/pages-deploy.yml'
   workflow_dispatch:
     inputs:
@@ -41,6 +48,13 @@ env:
   OWNER_GATE_PATCH: 103-owner-experience-gate-hotfix-rc39-v033.js
   MENU_MAP_PATCH: 104-menu-map-polish-rc39-v034.js
   MENU_MAP_POLISH_PATCH: 105-menu-map-polish-rc39-v035.js
+  RESPONSIVE_REBUILD_PATCH: 109-menu-map-responsive-rebuild-v039.js
+  RESPONSIVE_HOTFIX_PATCH: 110-menu-map-responsive-hotfix-v040.js
+  PORTRAIT_PREMIUM_PATCH: 111-menu-map-premium-portrait-v041.js
+  SECONDARY_POLISH_PATCH: 112-menu-map-secondary-polish-v042.js
+  SECONDARY_FINAL_PATCH: 113-menu-secondary-final-polish-v043.js
+  SECONDARY_FINISH_PATCH: 114-secondary-screens-finish-v044.js
+  SECONDARY_CLEANUP_PATCH: 115-secondary-cleanup-v045.js
 
 jobs:
   deploy:
@@ -90,7 +104,20 @@ jobs:
           cp -a "$ROOT/web/." "$RUNNER_TEMP/site/"
           REL="$RUNNER_TEMP/site/release_v81_campaign_presentation_rc39_v004_20260905"
           mkdir -p "$REL/src/runtime/v82"
-          PATCHES=("$OWNER_VISUAL_PATCH" "$OWNER_EXPERIENCE_PATCH" "$OWNER_GATE_PATCH" "$MENU_MAP_PATCH" "$MENU_MAP_POLISH_PATCH")
+          PATCHES=(
+            "$OWNER_VISUAL_PATCH"
+            "$OWNER_EXPERIENCE_PATCH"
+            "$OWNER_GATE_PATCH"
+            "$MENU_MAP_PATCH"
+            "$MENU_MAP_POLISH_PATCH"
+            "$RESPONSIVE_REBUILD_PATCH"
+            "$RESPONSIVE_HOTFIX_PATCH"
+            "$PORTRAIT_PREMIUM_PATCH"
+            "$SECONDARY_POLISH_PATCH"
+            "$SECONDARY_FINAL_PATCH"
+            "$SECONDARY_FINISH_PATCH"
+            "$SECONDARY_CLEANUP_PATCH"
+          )
           for PATCH in "${PATCHES[@]}"; do cp "$GITHUB_WORKSPACE/patches/$PATCH" "$REL/src/runtime/v82/$PATCH"; done
           python - "$RUNNER_TEMP/site/index.html" "${PATCHES[@]}" <<'PY'
           import sys
