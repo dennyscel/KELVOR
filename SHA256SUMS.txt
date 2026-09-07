@@ -6,7 +6,7 @@
 f52a56ab8a108cab4a8d506f68e5a695861e69f1a1d925c5b5f457a32259f034  .github/workflows/diagnose-seal1-targeted.yml
 bad87fdac9be82e03335360cdb983969bd36ff2fcc7e89862bbf6ab0f81f8bfa  .github/workflows/diagnose-seal3-targeted.yml
 c8eb371f80c65819fa0708098f255b906fbb1aafa0e04865b5652aa772e1dc4b  .github/workflows/inspect-post-spirit-authored-route.yml
-1e36d722c3607ad73c647c8766fd239be707d512b4e6a944c6fa89470125e905  .github/workflows/pages-deploy.yml
+04ec5bbca9e86456af2becc2515e5ac89a1b87095e740c3f12edad134fc945b3  .github/workflows/pages-deploy.yml
 740a36f08c0c30363389fddf2220a5afe973d26174c0fd3dda4446baa479f465  .github/workflows/prepare-rc39-v004-release.yml
 2d28bff21ac47dc27d5bc9ab445a44e1eabd7385b2648565cc84c516957749f2  .github/workflows/probe-rc39-release-sources.yml
 5eb0c55638ceb3dd6775b861c0e8f67cb6e1599698e5323b19fe8831d8817f30  .github/workflows/qa84-windows.yml
