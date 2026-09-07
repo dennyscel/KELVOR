@@ -1,0 +1,10 @@
+{
+  "gate": "MENU_MAP_V039",
+  "run_id": "34098380180",
+  "run_number": "2",
+  "head_sha": "4e808ac0b1d4e50ddca2ae92dce8262054e5906e",
+  "smoke_outcome": "failure",
+  "result": {
+    "status": "NO_RESULT"
+  }
+}
