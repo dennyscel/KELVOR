@@ -25,13 +25,14 @@ def main():
             except Exception:pass
         return False
     try:
-        d.get(f'http://127.0.0.1:{port}/index.html?v=044marker')
+        d.get(f'http://127.0.0.1:{port}/index.html?v=045marker')
         if not wait("return !!window.__KELVOR_MAIN_MENU_V043__&&window.__KELVOR_MAIN_MENU_V043__.scene?.isActive?.()===true;"):raise SystemExit('menu not ready')
         R['checks']['menu_story']=bool(d.execute_script("return !!window.__KELVOR_MAIN_MENU_V043__.__storyWorldV043&&!!window.__KELVOR_MAIN_MENU_V043__.__v043?.menuStoryFallback;"))
         d.execute_script("window.__KELVOR_MAIN_MENU_V043__.scene.start('OptionsSceneV10')")
-        if not wait("return !!window.__KELVOR_OPTIONS_V044__?.scene?.isActive?.()===true;"):raise SystemExit('options v044 not ready')
-        R['checks']['options_v044']=bool(d.execute_script("const s=window.__KELVOR_OPTIONS_V044__;return !!s.__v044?.optionsFinish&&!!s.__optionsFinishV044?.art&&s.__optionsFinishV044.chips?.length===4;"))
-        d.execute_script("window.__KELVOR_OPTIONS_V044__.__backV034.press()")
+        if not wait("return !!window.__KELVOR_OPTIONS_V045__?.scene?.isActive?.()===true;"):raise SystemExit('options v045 not ready')
+        R['checks']['options_v044']=bool(d.execute_script("const s=window.__KELVOR_OPTIONS_V045__;return !!s.__v044?.optionsFinish&&!!s.__optionsFinishV044?.art;"))
+        R['checks']['options_v045_clean']=bool(d.execute_script("const s=window.__KELVOR_OPTIONS_V045__,f=s.__optionsFinishV044;return !!s.__v045?.optionsClean&&f.chips?.every(c=>!c.box.visible&&!c.tx.visible)&&Math.abs(f.art.ring.y-s.scale.height*.748)<3;"))
+        d.execute_script("window.__KELVOR_OPTIONS_V045__.__backV034.press()")
         if not wait("return !!window.__KELVOR_MAIN_MENU_V043__?.scene?.isActive?.()===true;"):raise SystemExit('menu return failed')
         d.execute_script("window.__KELVOR_MAIN_MENU_V043__.scene.start('MusicPlayerSceneV10')")
         if not wait("return !!window.__KELVOR_MUSIC_V044__?.scene?.isActive?.()===true;"):raise SystemExit('music v044 not ready')
@@ -39,10 +40,11 @@ def main():
         d.execute_script("window.__KELVOR_MUSIC_V044__.__backV034.press()")
         if not wait("return !!window.__KELVOR_MAIN_MENU_V043__?.scene?.isActive?.()===true;"):raise SystemExit('menu return 2 failed')
         d.execute_script("window.__KELVOR_MAIN_MENU_V043__.scene.start('CreditsSceneV10')")
-        if not wait("return !!window.__KELVOR_CREDITS_V044__?.scene?.isActive?.()===true;"):raise SystemExit('credits v044 not ready')
-        R['checks']['credits_v044']=bool(d.execute_script("const s=window.__KELVOR_CREDITS_V044__;return !!s.__v044?.creditsFinish&&s.__creditsFinishV044?.stars?.length===7&&!!s.__creditsFinishV044?.card;"))
+        if not wait("return !!window.__KELVOR_CREDITS_V045__?.scene?.isActive?.()===true;"):raise SystemExit('credits v045 not ready')
+        R['checks']['credits_v044']=bool(d.execute_script("const s=window.__KELVOR_CREDITS_V045__;return !!s.__v044?.creditsFinish&&s.__creditsFinishV044?.stars?.length===7&&!!s.__creditsFinishV044?.card;"))
+        R['checks']['credits_v045_no_overlap']=bool(d.execute_script("const s=window.__KELVOR_CREDITS_V045__,h=s.__creditsFinishV044?.hdr;return !!s.__v045?.creditsNoOverlap&&!!s.__creditsCleanV045?.cap&&[h?.lineL,h?.lineR,h?.t,h?.s].every(o=>!o?.visible);"))
         R['status']='PASS' if all(R['checks'].values()) else 'FAIL'
-        (out/'SECONDARY_V044.json').write_text(json.dumps(R,ensure_ascii=False,indent=2),encoding='utf-8')
+        (out/'SECONDARY_V045.json').write_text(json.dumps(R,ensure_ascii=False,indent=2),encoding='utf-8')
         print(json.dumps(R,ensure_ascii=True,indent=2));return 0 if R['status']=='PASS' else 1
     finally:
         try:d.quit()
