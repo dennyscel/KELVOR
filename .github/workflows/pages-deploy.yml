@@ -20,9 +20,13 @@ on:
       - 'patches/115-secondary-cleanup-v045.js'
       - 'patches/116-world-map-model-v046.js'
       - 'patches/117-world-map-scene-v046.js'
+      - 'patches/118-menu-experience-v047.js'
       - 'assets/world-map/**'
+      - 'assets/menu/**'
       - 'scripts/build_living_map.py'
+      - 'scripts/build_menu_v047.py'
       - 'tests/world-map-*.test.cjs'
+      - 'tests/menu*.test.cjs'
       - '.github/workflows/pages-deploy.yml'
   workflow_dispatch:
     inputs:
@@ -76,8 +80,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Verify living map model and scene integration
-        run: node --test tests/world-map-model.test.cjs tests/world-map-scene.test.cjs
+      - name: Verify living map and menu behavior before building
+        run: node --test tests/world-map-model.test.cjs tests/world-map-scene.test.cjs tests/menu*.test.cjs
 
       - name: Acquire and verify RC39 v004 candidate
         env:
@@ -145,28 +149,47 @@ jobs:
           touch "$RUNNER_TEMP/baseline-v045/.nojekyll"
           for PATCH in "${PATCHES[@]}"; do grep -F "$PATCH" "$RUNNER_TEMP/baseline-v045/index.html"; test -f "$REL/src/runtime/v82/$PATCH"; done
 
-      - name: Build v046 mobile preview alongside the preserved v045 URL
+      - name: Build isolated v046 and v047 previews alongside the preserved v045 URL
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/site"
-          cp -a "$RUNNER_TEMP/baseline-v045/." "$RUNNER_TEMP/site/"
           python scripts/build_living_map.py \
             --baseline "$RUNNER_TEMP/baseline-v045" \
-            --output "$RUNNER_TEMP/site/v046" \
+            --output "$RUNNER_TEMP/candidate-v046" \
             --repo "$GITHUB_WORKSPACE"
-          python - "$RUNNER_TEMP/site/v046" "$GITHUB_SHA" <<'PY'
+          python scripts/build_menu_v047.py \
+            --baseline "$RUNNER_TEMP/candidate-v046" \
+            --output "$RUNNER_TEMP/candidate-v047" \
+            --repo "$GITHUB_WORKSPACE"
+          mkdir -p "$RUNNER_TEMP/site/v046" "$RUNNER_TEMP/site/v047"
+          cp -a "$RUNNER_TEMP/baseline-v045/." "$RUNNER_TEMP/site/"
+          cp -a "$RUNNER_TEMP/candidate-v046/." "$RUNNER_TEMP/site/v046/"
+          cp -a "$RUNNER_TEMP/candidate-v047/." "$RUNNER_TEMP/site/v047/"
+          python - "$RUNNER_TEMP/site" "$GITHUB_SHA" <<'PY'
           import json, sys
           from pathlib import Path
-          root=Path(sys.argv[1])
-          report=json.loads((root/'LIVING_MAP_BUILD_REPORT.json').read_text(encoding='utf-8'))
-          info={'candidate':'v046','commit':sys.argv[2],'payload_sha256':report['candidate']['tree_sha256'],'visual_approval':'pending'}
-          (root/'deployment.json').write_text(json.dumps(info,indent=2)+'\n',encoding='utf-8')
-          html=(root/'index.html').read_text(encoding='utf-8')
-          names=['115-secondary-cleanup-v045.js','116-world-map-model-v046.js','117-world-map-scene-v046.js']
-          positions=[html.index(name) for name in names]
-          assert positions==sorted(positions), 'Map patches out of order'
-          assert (root/report['release_dir']/'assets/world-map/w01-living-map-v046.png').is_file()
-          print('Public candidate path: /v046/; build',info)
+          sys.path.insert(0, str(Path.cwd()/'scripts'))
+          from build_menu_v047 import inventory, verify_payload
+          site=Path(sys.argv[1])
+          for version, report_name, build_id in [
+              ('v046','LIVING_MAP_BUILD_REPORT.json','kelvor-living-map-v046'),
+              ('v047','MENU_BUILD_REPORT.json','kelvor-menu-v047'),
+          ]:
+              root=site/version
+              report=json.loads((root/report_name).read_text(encoding='utf-8'))
+              verify_payload(report, inventory(root, exclude=report_name), build_id)
+              html=(root/'index.html').read_text(encoding='utf-8')
+              names=['115-secondary-cleanup-v045.js','116-world-map-model-v046.js','117-world-map-scene-v046.js']
+              if version=='v047':
+                  names.append('118-menu-experience-v047.js')
+                  assert '<title>KELVOR — A aventura começa (v047)</title>' in html
+                  assert any((root/report['release_dir']/'assets/menu').rglob('*.png')), 'Menu art missing'
+              positions=[html.index(name) for name in names]
+              assert positions==sorted(positions), 'Candidate patches out of order'
+              assert all(html.count(name)==1 for name in names), 'Duplicate candidate patch'
+              assert (root/report['release_dir']/'assets/world-map/w01-living-map-v046.png').is_file()
+              info={'candidate':version,'commit':sys.argv[2],'payload_sha256':report['candidate']['tree_sha256'],'visual_approval':'pending'}
+              (root/'deployment.json').write_text(json.dumps(info,indent=2)+'\n',encoding='utf-8')
+              print(f'Public candidate path: /{version}/; build',info)
           PY
 
       - name: Configure Pages
