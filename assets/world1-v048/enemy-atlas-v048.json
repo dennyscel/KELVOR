@@ -1,0 +1,23 @@
+{
+  "image": "enemy-sprites-v048.png",
+  "imageWidth": 1254,
+  "imageHeight": 1254,
+  "format": "RGBA",
+  "facing": "left",
+  "layout": "named rectangles; do not divide this image into an automatic 2x2 grid",
+  "alphaThresholdForVisualBounds": 32,
+  "coordinateConvention": "rect is [x,y,width,height]; anchor is [x,y] relative to rect, at body centre and lowest visible foot. Scale each species independently by targetVisualHeight / nominalHeight. Bee also supplies bodyAnchor for flight-centre positioning.",
+  "frames": [
+    { "name": "beetle", "rect": [126,186,406,310], "anchor": [202,301], "nominalHeight": 294, "visualBounds": [134,194,524,488] },
+    { "name": "bee", "rect": [681,117,454,401], "anchor": [240,392], "bodyAnchor": [240,230], "nominalHeight": 385, "visualBounds": [689,125,1127,510] },
+    { "name": "mushroom", "rect": [137,703,378,405], "anchor": [200,396], "nominalHeight": 389, "visualBounds": [145,711,507,1100] },
+    { "name": "guardian", "rect": [651,596,546,562], "anchor": [275,553], "nominalHeight": 546, "visualBounds": [659,604,1189,1150], "encounterRole": "optional challenge; never a mandatory exit gate" }
+  ],
+  "notes": [
+    "PNG bytes and alpha are unchanged from the selected ImageGen output; no raster editing was performed.",
+    "Visible bounds include alpha >= 32. Named rectangles add eight pixels padding and contain every visible pixel; no visible sprite touches a rectangle edge.",
+    "Guardians extend slightly above the notional lower-row boundary; consume these rectangles rather than automatic square cells.",
+    "All four source sprites face left; mirror the complete sprite around its anchor when facing right.",
+    "This atlas contains four poses, one per species. Motion and attack telegraphs are supplied by the game renderer and logic."
+  ]
+}

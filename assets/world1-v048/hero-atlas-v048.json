@@ -1,0 +1,27 @@
+{
+  "image": "hero-actions-v048.png",
+  "imageWidth": 1774,
+  "imageHeight": 887,
+  "format": "RGBA",
+  "layout": "named rectangles; do not divide this image into an automatic 4x2 grid",
+  "alphaThresholdForVisualBounds": 32,
+  "nominalStandingHeight": 399,
+  "coordinateConvention": "rect is [x,y,width,height]; anchor is [x,y] relative to rect, at the body centre and lowest visible foot. Use a single scale based on nominalStandingHeight for all poses.",
+  "frames": [
+    { "name": "idle", "rect": [56,11,272,411], "anchor": [188,404], "visualBounds": [62,17,322,416] },
+    { "name": "run-contact-left", "rect": [496,27,310,394], "anchor": [187,387], "visualBounds": [502,33,800,415] },
+    { "name": "run-passing", "rect": [954,15,303,403], "anchor": [177,397], "visualBounds": [960,21,1251,412] },
+    { "name": "run-contact-right", "rect": [1401,31,308,387], "anchor": [190,381], "visualBounds": [1407,37,1703,412] },
+    { "name": "jump", "rect": [61,455,300,340], "anchor": [190,333], "visualBounds": [67,461,355,789] },
+    { "name": "fall", "rect": [506,514,307,338], "anchor": [182,332], "visualBounds": [512,520,807,846] },
+    { "name": "slash", "rect": [901,506,500,343], "anchor": [164,337], "visualBounds": [907,512,1395,843] },
+    { "name": "climb", "rect": [1431,438,245,422], "anchor": [162,416], "visualBounds": [1437,444,1670,854] }
+  ],
+  "notes": [
+    "Image bytes and alpha channel are preserved exactly as generated; no raster postprocessing was performed.",
+    "The slash extends beyond an equal-width third cell, so its named rectangle is deliberately wider.",
+    "Visual bounds use alpha >= 32 to ignore near-transparent generative specks; frame rectangles add six pixels padding. No visible sprite edge touches a frame boundary.",
+    "The two contact poses are similar; this is an eight-pose starter atlas, not a complete high-frame-rate production animation set.",
+    "Anchors are authored from visible body centre and foot sole; renderer collision feet should use the supplied anchors, not the padded image bottom."
+  ]
+}

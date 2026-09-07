@@ -1,0 +1,174 @@
+{
+  "scope": "Real legacy RC1, RC4 and RC35 source executed unchanged in VM together with current116/117/120/121/122. Phaser/render and destination W02 scene body stubbed only; campaign progression and route validation are real.",
+  "passed": 15,
+  "assertions": [
+    "L03 really unlocks optional BOSS node",
+    "W02 remains locked before W01 ending encounter",
+    "Guardian is alive before peaceful completion",
+    "Real RC1/RC4/RC35 round-trip accepts BOSS COMPLETED",
+    "World one marked complete",
+    "World two stays unlocked after RC35 migration",
+    "World two first stage available",
+    "Peaceful completion never grants Guardian victory",
+    "Map117 accepts standing at BOSS COMPLETED",
+    "Map117 switchWorld advances to W02 without checking defeat",
+    "Map switch emits no locked-Guardian warning",
+    "Map117 persists W02/L01 arrival using real route validation",
+    "Map117 enters W02_L01 through actual RC4 registry",
+    "Launch carries exact W02 campaign ID",
+    "Each W01 completion starts only the map"
+  ],
+  "sources": [
+    {
+      "file": "C:\\Users\\Meu Computador\\Documents\\KELVOR\\03_JOGO_LOCAL\\CANDIDATO_V047\\release_v81_campaign_presentation_rc39_v004_20260905\\src\\runtime\\v24\\17-campaign-world-map-integration.js",
+      "sha256": "59c7c95235f5c37f6e89407826839b1e874111a67e6decb110ac3b343c2380f8"
+    },
+    {
+      "file": "C:\\Users\\Meu Computador\\Documents\\KELVOR\\03_JOGO_LOCAL\\CANDIDATO_V047\\release_v81_campaign_presentation_rc39_v004_20260905\\src\\runtime\\v27\\20-level-registry-campaign-state-rc4.js",
+      "sha256": "9d4c7849462b159fe835f0c03eef513aa7b32e9972b74e501b72b64c5df137d5"
+    },
+    {
+      "file": "C:\\Users\\Meu Computador\\Documents\\KELVOR\\03_JOGO_LOCAL\\CANDIDATO_V047\\release_v81_campaign_presentation_rc39_v004_20260905\\src\\runtime\\v55\\58-save-migration-rc35.js",
+      "sha256": "5e8851374bb06f2b0053e11aab9bb5b35c584825c7442e1fe85e1dcf84ab3cbe"
+    },
+    {
+      "file": "C:\\Users\\Meu Computador\\Documents\\KELVOR\\01_REPOSITORIO\\KELVOR\\patches\\116-world-map-model-v046.js",
+      "sha256": "ed50c207dddd1c04b1d6ab169ea311cabfc8bced6687b95d55bc068990d4b7c1"
+    },
+    {
+      "file": "C:\\Users\\Meu Computador\\Documents\\KELVOR\\01_REPOSITORIO\\KELVOR\\patches\\117-world-map-scene-v046.js",
+      "sha256": "d116da7bb556317e2730120e83e5aa66476d839dabe316d981383f8c4bab041c"
+    },
+    {
+      "file": "C:\\Users\\Meu Computador\\Documents\\KELVOR\\01_REPOSITORIO\\KELVOR\\patches\\120-world1-content-v048.js",
+      "sha256": "eb5b57957c5ae92231a4ac38e8d69f84c7c8260485f33228e19dfabcab8a6921"
+    },
+    {
+      "file": "C:\\Users\\Meu Computador\\Documents\\KELVOR\\01_REPOSITORIO\\KELVOR\\patches\\121-world1-physics-v048.js",
+      "sha256": "ca85fa4016d1d2f10d417d4889c6c2b287c8deb45c72582f2dfab6a03145ecfc"
+    },
+    {
+      "file": "C:\\Users\\Meu Computador\\Documents\\KELVOR\\01_REPOSITORIO\\KELVOR\\patches\\122-world1-scene-v048.js",
+      "sha256": "6d80788b769ff49f5ff78c98b53cdfae8457da0800f5bb73bf9d7ccf674dbe07"
+    }
+  ],
+  "finalSave": {
+    "version": 2,
+    "currentWorld": "W02",
+    "selected": "W02_L01",
+    "worlds": {
+      "W01": {
+        "unlocked": true,
+        "nodes": {
+          "L01": "COMPLETED",
+          "L02": "COMPLETED",
+          "L03": "COMPLETED",
+          "SECRET": "LOCKED",
+          "BOSS": "COMPLETED"
+        },
+        "secretExit": false,
+        "completed": true,
+        "bonusRooms": {
+          "B01": false
+        },
+        "bonusRewards": {
+          "B01": null
+        }
+      },
+      "W02": {
+        "unlocked": true,
+        "nodes": {
+          "L01": "AVAILABLE",
+          "L02": "LOCKED",
+          "L03": "LOCKED",
+          "SECRET": "LOCKED",
+          "BOSS": "LOCKED"
+        },
+        "secretExit": false,
+        "completed": false,
+        "bonusRooms": {},
+        "bonusRewards": {}
+      },
+      "W03": {
+        "unlocked": false,
+        "nodes": {
+          "L01": "LOCKED",
+          "L02": "LOCKED",
+          "L03": "LOCKED",
+          "SECRET": "LOCKED",
+          "BOSS": "LOCKED"
+        },
+        "secretExit": false,
+        "completed": false,
+        "bonusRooms": {},
+        "bonusRewards": {}
+      },
+      "W04": {
+        "unlocked": false,
+        "nodes": {
+          "L01": "LOCKED",
+          "L02": "LOCKED",
+          "L03": "LOCKED",
+          "SECRET": "LOCKED",
+          "BOSS": "LOCKED"
+        },
+        "secretExit": false,
+        "completed": false,
+        "bonusRooms": {},
+        "bonusRewards": {}
+      },
+      "W05": {
+        "unlocked": false,
+        "nodes": {
+          "L01": "LOCKED",
+          "L02": "LOCKED",
+          "L03": "LOCKED",
+          "SECRET": "LOCKED",
+          "BOSS": "LOCKED"
+        },
+        "secretExit": false,
+        "completed": false,
+        "bonusRooms": {},
+        "bonusRewards": {}
+      }
+    },
+    "saveMeta": {
+      "schemaVersion": 2,
+      "migrator": "RC35"
+    }
+  },
+  "starts": [
+    [
+      "WorldMapSceneRC1",
+      {
+        "returnFromLevel": "W01_L01"
+      }
+    ],
+    [
+      "WorldMapSceneRC1",
+      {
+        "returnFromLevel": "W01_L02"
+      }
+    ],
+    [
+      "WorldMapSceneRC1",
+      {
+        "returnFromLevel": "W01_L03"
+      }
+    ],
+    [
+      "WorldMapSceneRC1",
+      {
+        "returnFromLevel": "W01_BOSS"
+      }
+    ],
+    [
+      "W02ActualScene",
+      {
+        "campaignLevelId": "W02_L01",
+        "fromWorldMap": true
+      }
+    ]
+  ],
+  "messages": []
+}

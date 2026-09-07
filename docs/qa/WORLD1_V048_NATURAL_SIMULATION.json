@@ -1,0 +1,111 @@
+{
+  "method": "Actual World.step simulation; start at each authored spawn; input only; no position edits in campaign runs. Directed contact tests use explicitly positioned unit fixtures.",
+  "contentSHA256": "eb5b57957c5ae92231a4ac38e8d69f84c7c8260485f33228e19dfabcab8a6921",
+  "physicsSHA256": "ca85fa4016d1d2f10d417d4889c6c2b287c8deb45c72582f2dfab6a03145ecfc",
+  "dt": 0.016666666666666666,
+  "levels": [
+    {
+      "id": "W01_L01",
+      "status": "celebrating",
+      "authoredWidth": 42000,
+      "goalX": 41760,
+      "finalX": 41696.4,
+      "maximumX": 41696.4,
+      "simulatedSeconds": 181.67,
+      "deaths": 0,
+      "damageEvents": 2,
+      "recoveryInputs": 0,
+      "completeEvents": 1,
+      "coins": 197,
+      "keys": [
+        "orvalho"
+      ],
+      "guardianDefeated": null,
+      "teleports": 0,
+      "checkpoints": 9,
+      "trace": []
+    },
+    {
+      "id": "W01_L02",
+      "status": "celebrating",
+      "authoredWidth": 24000,
+      "goalX": 23760,
+      "finalX": 23696.63,
+      "maximumX": 23696.63,
+      "simulatedSeconds": 105.86,
+      "deaths": 0,
+      "damageEvents": 2,
+      "recoveryInputs": 0,
+      "completeEvents": 1,
+      "coins": 119,
+      "keys": [
+        "nascente",
+        "cascata",
+        "arco"
+      ],
+      "guardianDefeated": null,
+      "teleports": 0,
+      "checkpoints": 7,
+      "trace": []
+    },
+    {
+      "id": "W01_L03",
+      "status": "celebrating",
+      "authoredWidth": 28000,
+      "goalX": 27760,
+      "finalX": 27695.65,
+      "maximumX": 27695.65,
+      "simulatedSeconds": 121.1,
+      "deaths": 0,
+      "damageEvents": 5,
+      "recoveryInputs": 0,
+      "completeEvents": 1,
+      "coins": 120,
+      "keys": [],
+      "guardianDefeated": null,
+      "teleports": 0,
+      "checkpoints": 7,
+      "trace": []
+    },
+    {
+      "id": "W01_SECRET",
+      "status": "celebrating",
+      "authoredWidth": 12000,
+      "goalX": 11760,
+      "finalX": 11696.95,
+      "maximumX": 11696.95,
+      "simulatedSeconds": 51.52,
+      "deaths": 0,
+      "damageEvents": 0,
+      "recoveryInputs": 0,
+      "completeEvents": 1,
+      "coins": 70,
+      "keys": [
+        "pirilampo"
+      ],
+      "guardianDefeated": null,
+      "teleports": 0,
+      "checkpoints": 4,
+      "trace": []
+    },
+    {
+      "id": "W01_BOSS",
+      "status": "celebrating",
+      "authoredWidth": 2400,
+      "goalX": 2230,
+      "finalX": 2166.61,
+      "maximumX": 2166.61,
+      "simulatedSeconds": 8.52,
+      "deaths": 0,
+      "damageEvents": 0,
+      "recoveryInputs": 0,
+      "completeEvents": 1,
+      "coins": 0,
+      "keys": [],
+      "guardianDefeated": false,
+      "teleports": 0,
+      "checkpoints": 1,
+      "trace": []
+    }
+  ]
+}

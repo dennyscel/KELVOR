@@ -21,12 +21,20 @@ on:
       - 'patches/116-world-map-model-v046.js'
       - 'patches/117-world-map-scene-v046.js'
       - 'patches/118-menu-experience-v047.js'
+      - 'patches/119-world1-input-v048.js'
+      - 'patches/120-world1-content-v048.js'
+      - 'patches/121-world1-physics-v048.js'
+      - 'patches/123-world1-audio-v048.js'
+      - 'patches/122-world1-scene-v048.js'
       - 'assets/world-map/**'
       - 'assets/menu/**'
+      - 'assets/world1-v048/**'
       - 'scripts/build_living_map.py'
       - 'scripts/build_menu_v047.py'
+      - 'scripts/build_world1_v048.py'
       - 'tests/world-map-*.test.cjs'
       - 'tests/menu*.test.cjs'
+      - 'tests/world1*.test.cjs'
       - '.github/workflows/pages-deploy.yml'
   workflow_dispatch:
     inputs:
@@ -80,8 +88,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Verify living map and menu behavior before building
-        run: node --test tests/world-map-model.test.cjs tests/world-map-scene.test.cjs tests/menu*.test.cjs
+      - name: Verify map, menus and first-world behavior before building
+        run: node --test tests/world-map-model.test.cjs tests/world-map-scene.test.cjs tests/menu*.test.cjs tests/world1*.test.cjs
 
       - name: Acquire and verify RC39 v004 candidate
         env:
@@ -149,7 +157,7 @@ jobs:
           touch "$RUNNER_TEMP/baseline-v045/.nojekyll"
           for PATCH in "${PATCHES[@]}"; do grep -F "$PATCH" "$RUNNER_TEMP/baseline-v045/index.html"; test -f "$REL/src/runtime/v82/$PATCH"; done
 
-      - name: Build isolated v046 and v047 previews alongside the preserved v045 URL
+      - name: Build isolated v046, v047 and v048 previews alongside the preserved v045 URL
         run: |
           set -euo pipefail
           python scripts/build_living_map.py \
@@ -160,10 +168,15 @@ jobs:
             --baseline "$RUNNER_TEMP/candidate-v046" \
             --output "$RUNNER_TEMP/candidate-v047" \
             --repo "$GITHUB_WORKSPACE"
-          mkdir -p "$RUNNER_TEMP/site/v046" "$RUNNER_TEMP/site/v047"
+          python scripts/build_world1_v048.py \
+            --baseline "$RUNNER_TEMP/candidate-v047" \
+            --output "$RUNNER_TEMP/candidate-v048" \
+            --repo "$GITHUB_WORKSPACE"
+          mkdir -p "$RUNNER_TEMP/site/v046" "$RUNNER_TEMP/site/v047" "$RUNNER_TEMP/site/v048"
           cp -a "$RUNNER_TEMP/baseline-v045/." "$RUNNER_TEMP/site/"
           cp -a "$RUNNER_TEMP/candidate-v046/." "$RUNNER_TEMP/site/v046/"
           cp -a "$RUNNER_TEMP/candidate-v047/." "$RUNNER_TEMP/site/v047/"
+          cp -a "$RUNNER_TEMP/candidate-v048/." "$RUNNER_TEMP/site/v048/"
           python - "$RUNNER_TEMP/site" "$GITHUB_SHA" <<'PY'
           import json, sys
           from pathlib import Path
@@ -173,16 +186,25 @@ jobs:
           for version, report_name, build_id in [
               ('v046','LIVING_MAP_BUILD_REPORT.json','kelvor-living-map-v046'),
               ('v047','MENU_BUILD_REPORT.json','kelvor-menu-v047'),
+              ('v048','WORLD1_BUILD_REPORT.json','kelvor-world1-v048'),
           ]:
               root=site/version
               report=json.loads((root/report_name).read_text(encoding='utf-8'))
               verify_payload(report, inventory(root, exclude=report_name), build_id)
               html=(root/'index.html').read_text(encoding='utf-8')
               names=['115-secondary-cleanup-v045.js','116-world-map-model-v046.js','117-world-map-scene-v046.js']
-              if version=='v047':
+              if version in ('v047','v048'):
                   names.append('118-menu-experience-v047.js')
-                  assert '<title>KELVOR — A aventura começa (v047)</title>' in html
                   assert any((root/report['release_dir']/'assets/menu').rglob('*.png')), 'Menu art missing'
+              if version=='v047':
+                  assert '<title>KELVOR — A aventura começa (v047)</title>' in html
+              if version=='v048':
+                  world1_names=['119-world1-input-v048.js','120-world1-content-v048.js','121-world1-physics-v048.js','123-world1-audio-v048.js','122-world1-scene-v048.js']
+                  names.extend(world1_names)
+                  assert report['patch_order']==world1_names, 'First-world manifest load order differs'
+                  assert '<title>KELVOR — O primeiro mundo floresce (v048)</title>' in html
+                  for asset in ['dawn-forest-v048.png','moon-grove-v048.png','hero-actions-v048.png','enemy-sprites-v048.png','terrain-forest-v048.png','props-forest-v048.png','props-atlas-v048.json']:
+                      assert (root/report['release_dir']/'assets/world1-v048'/asset).is_file(), f'First-world art missing: {asset}'
               positions=[html.index(name) for name in names]
               assert positions==sorted(positions), 'Candidate patches out of order'
               assert all(html.count(name)==1 for name in names), 'Duplicate candidate patch'

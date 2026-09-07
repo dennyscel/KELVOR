@@ -1,0 +1,23 @@
+{
+  "image": "props-forest-v048.png",
+  "imageWidth": 1536,
+  "imageHeight": 1024,
+  "format": "RGBA",
+  "layout": "named rectangles; do not divide automatically into equal cells",
+  "alphaThresholdForVisualBounds": 32,
+  "coordinateConvention": "rect [x,y,width,height]; anchor [x,y] relative to rect at base; nominalHeight is visible pixel height. solidRect, when supplied, is a suggested authored collision body [x,y,width,height] relative to rect, excluding decorative leaves.",
+  "frames": [
+    { "name": "log", "rect": [51,164,428,241], "anchor": [214,232], "nominalHeight": 225, "visualBounds": [59,172,471,397], "solidRect": [9,71,411,162], "role": "low platform; moss and leaf tips extend above solid body" },
+    { "name": "crate", "rect": [632,107,274,302], "anchor": [137,293], "nominalHeight": 286, "visualBounds": [640,115,898,401], "solidRect": [8,31,258,263], "role": "solid wooden box; top leaves are decorative" },
+    { "name": "sign", "rect": [1166,54,264,376], "anchor": [130,367], "nominalHeight": 360, "visualBounds": [1174,62,1422,422], "role": "right-pointing direction sign, no words" },
+    { "name": "door", "rect": [51,498,420,471], "anchor": [210,462], "nominalHeight": 455, "visualBounds": [59,506,463,961], "role": "closed door and stone frame; interaction/opening effect belongs to renderer" },
+    { "name": "bell", "rect": [588,527,366,435], "anchor": [183,426], "nominalHeight": 419, "visualBounds": [596,535,946,954], "role": "bell in complete wooden support arch" },
+    { "name": "spring", "rect": [1114,568,351,401], "anchor": [175,392], "nominalHeight": 385, "visualBounds": [1122,576,1457,961], "role": "magical spring flower; renderer supplies compression and rebound" }
+  ],
+  "notes": [
+    "PNG bytes are unchanged from ImageGen. Empty pixels can retain hidden RGB colour while alpha is zero; do not discard alpha when loading or exporting.",
+    "Every visible pixel at alpha >= 32 is covered by these rectangles, with eight pixels of clear edge padding.",
+    "Object collision bounds are independent from texture padding. Use the authored anchor to align the base; leaves above the log and crate do not define their solid collision top.",
+    "Terrain texture is a separate full rectangle; its first row aligns exactly with the collision surface and should never be drawn at an offset fake floor."
+  ]
+}
