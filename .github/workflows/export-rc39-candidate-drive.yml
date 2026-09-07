@@ -1,0 +1,68 @@
+name: KELVOR Export RC39 Candidate To Drive Handoff
+
+on:
+  push:
+    paths:
+      - '.github/workflows/export-rc39-candidate-drive.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      RELEASE_ID: '383144921'
+      EXPECTED_ASSET: KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905.zip
+      EXPECTED_SHA256: 77e50fde0ac6fc392237616d2842814a92a6d6d392a54487b38321c339b2d36e
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download exact release asset and verify
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ASSET_ID="$(gh api "/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" --jq ".assets[] | select(.name == \"$EXPECTED_ASSET\") | .id" | head -n1)"
+          test -n "$ASSET_ID"
+          OUT="$RUNNER_TEMP/$EXPECTED_ASSET"
+          curl --fail --location --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" -H "X-GitHub-Api-Version: 2022-11-28" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/assets/$ASSET_ID" --output "$OUT"
+          GOT="$(sha256sum "$OUT" | awk '{print $1}')"
+          BYTES="$(stat -c%s "$OUT")"
+          test "$GOT" = "$EXPECTED_SHA256"
+          echo "CANDIDATE=$OUT" >> "$GITHUB_ENV"
+          echo "CANDIDATE_SHA=$GOT" >> "$GITHUB_ENV"
+          echo "CANDIDATE_BYTES=$BYTES" >> "$GITHUB_ENV"
+          echo "bytes=$BYTES sha256=$GOT"
+      - name: Upload exact candidate artifact
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: KELVOR-RC39-ORIGINAL-CANDIDATE-DRIVE-${{ github.run_number }}
+          path: ${{ env.CANDIDATE }}
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
+      - name: Record export pointer
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/qa
+          cat > docs/qa/DRIVE_RC39_EXPORT_LATEST.json <<JSON
+          {
+            "workflow_run_id": "${{ github.run_id }}",
+            "workflow_run_number": "${{ github.run_number }}",
+            "artifact_id": "${{ steps.upload.outputs.artifact-id }}",
+            "artifact_url": "${{ steps.upload.outputs.artifact-url }}",
+            "file_name": "$EXPECTED_ASSET",
+            "bytes": "$CANDIDATE_BYTES",
+            "sha256": "$CANDIDATE_SHA"
+          }
+          JSON
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/qa/DRIVE_RC39_EXPORT_LATEST.json
+          git commit -m 'qa: record RC39 Drive export artifact'
+          git push origin HEAD:main
