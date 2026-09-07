@@ -1,13 +1,13 @@
 {
-  "gate": "MENU_MAP_V042",
-  "run_id": "34100825208",
-  "run_number": "7",
-  "head_sha": "56494b9f174cb453cb86617c288f6c21b5dc6135",
-  "smoke_outcome": "failure",
+  "gate": "MENU_MAP_V043",
+  "run_id": "34101312474",
+  "run_number": "8",
+  "head_sha": "9d9dbb6fa9bbde488fec9b37088da6bf086185c0",
+  "smoke_outcome": "success",
   "result": {
     "checks": {
       "menu_portrait_exclusive": true,
-      "menu_portrait_v042": false,
+      "menu_portrait_v042": true,
       "menu_portrait_controls": true,
       "menu_portrait_compact": true,
       "menu_landscape_exclusive": true,
@@ -45,7 +45,7 @@
       "map_portrait_reload.png",
       "menu_desktop.png"
     ],
-    "status": "FAIL",
+    "status": "PASS",
     "menu_portrait_1": {
       "buttons": [
         {
@@ -88,10 +88,10 @@
       "hero": {
         "scale": 1.24,
         "x": 320,
-        "y": 429.34738919818477
+        "y": 429.2408110500423
       },
       "ori": "portrait",
-      "story": false,
+      "story": true,
       "v42": {
         "compactFlow": true,
         "portraitStory": true
@@ -226,6 +226,6 @@
       },
       "w": 640
     },
-    "technical_score": 9.57
+    "technical_score": 10.0
   }
 }
