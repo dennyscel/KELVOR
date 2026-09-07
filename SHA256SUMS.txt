@@ -14,6 +14,7 @@ c8eb371f80c65819fa0708098f255b906fbb1aafa0e04865b5652aa772e1dc4b  .github/workfl
 884aea95c7ee7ae4a36434ee45f3e00dd7a92e629b09555d5494c6985f719a6f  .github/workflows/repo-snapshot.yml
 49e4ff64ae22f0cf8ff456e944f07700e080fdac4d854aecdb72417adba7ab1b  .github/workflows/verify-menu-map-v034.yml
 75b10fca627786e0bc51862afc7f73fa51189b0526389ffdcf22dd869c4c836d  .github/workflows/verify-menu-map-v035.yml
+492a99fa5b92921dbad29d9f01a2a6514e300c018b933cf12c5991d7095964f6  .github/workflows/verify-menu-map-v039.yml
 fbd57a1b1849e9a9a13920bb48759f7517175e41ef7d4b6d9d53ee42c3444437  .github/workflows/verify-owner-experience-v032.yml
 f7c6e6982fe0a210fc2181c03137e872dbb4a2f9fbd9872fd7c2e39ffab93cbf  .github/workflows/verify-owner-visual-v031.yml
 6c0cf46673527b929671a2dbb6e0c855287ede46df14b5328df9aa57ec6c9c40  .github/workflows/verify-w01-l01-v036.yml
