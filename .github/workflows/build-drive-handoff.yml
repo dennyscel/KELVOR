@@ -25,6 +25,25 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Record active run pointer early
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/qa
+          cat > docs/qa/DRIVE_HANDOFF_ACTIVE.json <<JSON
+          {
+            "workflow_run_id": "$GITHUB_RUN_ID",
+            "workflow_run_number": "$GITHUB_RUN_NUMBER",
+            "head_sha": "$GITHUB_SHA",
+            "state": "STARTED"
+          }
+          JSON
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/qa/DRIVE_HANDOFF_ACTIVE.json
+          git commit -m 'qa: record active Drive handoff run'
+          git push origin HEAD:main
+
       - name: Prepare bundle
         shell: bash
         env:
@@ -115,5 +134,6 @@ jobs:
           JSON
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git pull --rebase origin main
           git add docs/qa/DRIVE_HANDOFF_LATEST.json
           if ! git diff --cached --quiet; then git commit -m 'qa: record complete Drive handoff bundle'; git push origin HEAD:main; fi
