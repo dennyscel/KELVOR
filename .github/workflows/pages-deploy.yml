@@ -8,6 +8,8 @@ on:
       - 'patches/101-owner-mobile-visual-feedback-rc39-v031.js'
       - 'patches/102-owner-experience-rc39-v032.js'
       - 'patches/103-owner-experience-gate-hotfix-rc39-v033.js'
+      - 'patches/104-menu-map-polish-rc39-v034.js'
+      - 'patches/105-menu-map-polish-rc39-v035.js'
       - '.github/workflows/pages-deploy.yml'
   workflow_dispatch:
     inputs:
@@ -37,6 +39,8 @@ env:
   OWNER_VISUAL_PATCH: 101-owner-mobile-visual-feedback-rc39-v031.js
   OWNER_EXPERIENCE_PATCH: 102-owner-experience-rc39-v032.js
   OWNER_GATE_PATCH: 103-owner-experience-gate-hotfix-rc39-v033.js
+  MENU_MAP_PATCH: 104-menu-map-polish-rc39-v034.js
+  MENU_MAP_POLISH_PATCH: 105-menu-map-polish-rc39-v035.js
 
 jobs:
   deploy:
@@ -63,19 +67,10 @@ jobs:
               --output "$OUT"
             EXPECTED="${{ inputs.campaign_zip_sha256 }}"
           else
-            if [ "${{ github.event_name }}" = "release" ]; then
-              RID="${{ github.event.release.id }}"
-            else
-              RID="$RELEASE_ID"
-            fi
+            if [ "${{ github.event_name }}" = "release" ]; then RID="${{ github.event.release.id }}"; else RID="$RELEASE_ID"; fi
             ASSET_ID="$(gh api "/repos/$GITHUB_REPOSITORY/releases/$RID" --jq ".assets[] | select(.name == \"$EXPECTED_ASSET\") | .id" | head -n 1)"
             test -n "$ASSET_ID"
-            curl --fail --location --silent --show-error \
-              -H "Authorization: Bearer $GH_TOKEN" \
-              -H "Accept: application/octet-stream" \
-              -H "X-GitHub-Api-Version: 2022-11-28" \
-              "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/assets/$ASSET_ID" \
-              --output "$OUT"
+            curl --fail --location --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" -H "X-GitHub-Api-Version: 2022-11-28" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/assets/$ASSET_ID" --output "$OUT"
             EXPECTED="$EXPECTED_SHA256"
           fi
           GOT="$(sha256sum "$OUT" | awk '{print $1}')"
@@ -84,7 +79,7 @@ jobs:
           test "$GOT" = "$(echo "$EXPECTED" | tr 'A-F' 'a-f')"
           echo "CAMPAIGN_ZIP=$OUT" >> "$GITHUB_ENV"
 
-      - name: Build static Pages payload + owner experience hotfixes
+      - name: Build static Pages payload + promoted owner patches
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/candidate" "$RUNNER_TEMP/site"
@@ -95,31 +90,22 @@ jobs:
           cp -a "$ROOT/web/." "$RUNNER_TEMP/site/"
           REL="$RUNNER_TEMP/site/release_v81_campaign_presentation_rc39_v004_20260905"
           mkdir -p "$REL/src/runtime/v82"
-          for PATCH in "$OWNER_VISUAL_PATCH" "$OWNER_EXPERIENCE_PATCH" "$OWNER_GATE_PATCH"; do
-            cp "$GITHUB_WORKSPACE/patches/$PATCH" "$REL/src/runtime/v82/$PATCH"
-          done
-          python - "$RUNNER_TEMP/site/index.html" "$OWNER_VISUAL_PATCH" "$OWNER_EXPERIENCE_PATCH" "$OWNER_GATE_PATCH" <<'PY'
+          PATCHES=("$OWNER_VISUAL_PATCH" "$OWNER_EXPERIENCE_PATCH" "$OWNER_GATE_PATCH" "$MENU_MAP_PATCH" "$MENU_MAP_POLISH_PATCH")
+          for PATCH in "${PATCHES[@]}"; do cp "$GITHUB_WORKSPACE/patches/$PATCH" "$REL/src/runtime/v82/$PATCH"; done
+          python - "$RUNNER_TEMP/site/index.html" "${PATCHES[@]}" <<'PY'
           import sys
           from pathlib import Path
-          p=Path(sys.argv[1]); names=sys.argv[2:]
-          text=p.read_text(encoding='utf-8')
+          p=Path(sys.argv[1]); names=sys.argv[2:]; text=p.read_text(encoding='utf-8')
           if '</body>' not in text: raise SystemExit('index body marker missing')
           tags=[]
           for name in names:
               tag=f'<script src="./src/runtime/v82/{name}"></script>'
               if tag not in text: tags.append(tag)
           if tags:
-              text=text.replace('</body>','\n'.join(tags)+'\n</body>')
-              p.write_text(text,encoding='utf-8')
+              text=text.replace('</body>','\n'.join(tags)+'\n</body>');p.write_text(text,encoding='utf-8')
           PY
           touch "$RUNNER_TEMP/site/.nojekyll"
-          test -f "$RUNNER_TEMP/site/index.html"
-          grep -F "$OWNER_VISUAL_PATCH" "$RUNNER_TEMP/site/index.html"
-          grep -F "$OWNER_EXPERIENCE_PATCH" "$RUNNER_TEMP/site/index.html"
-          grep -F "$OWNER_GATE_PATCH" "$RUNNER_TEMP/site/index.html"
-          test -f "$REL/src/runtime/v82/$OWNER_VISUAL_PATCH"
-          test -f "$REL/src/runtime/v82/$OWNER_EXPERIENCE_PATCH"
-          test -f "$REL/src/runtime/v82/$OWNER_GATE_PATCH"
+          for PATCH in "${PATCHES[@]}"; do grep -F "$PATCH" "$RUNNER_TEMP/site/index.html"; test -f "$REL/src/runtime/v82/$PATCH"; done
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
