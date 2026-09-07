@@ -1,0 +1,11 @@
+{
+  "workflow_run_id": "34104978314",
+  "workflow_run_number": "177",
+  "artifact_id": "10011979075",
+  "artifact_url": "https://github.com/dennyscel/KELVOR/actions/runs/34104978314/artifacts/10011979075",
+  "repository": "dennyscel/KELVOR",
+  "branch": "main",
+  "snapshot_commit": "ee53c3f481599a7d8b689b80687cf573db3ffdeb",
+  "snapshot_sha256": "2e6c7106d0de7e738fd43404511397393fc95ed0e75e7d5ad6fbfa70f5df6332",
+  "locked": false
+}
