@@ -1,40 +1,33 @@
-# Visual block — RC39 v034-v035
+# Visual block — RC39 v034-v035 REOPENED
 
 Scope: Main Menu + World Map + mobile navigation in secondary menus.
 
 Promotion rule: `docs/QA_VISUAL_9_OF_10_GATE.md`.
 
-## Final status
+## Current status
 
-**PROMOTED — 9.2/10**
+**REOPENED / FAIL — prior 9.2/10 promotion revoked by Owner QA**
 
-- Windows/Chrome technical smoke: **10.0/10 PASS**
-- hard fails: **0**
-- mobile/landscape controls: inside viewport
-- Options touch Back: visible and returns to Main Menu
-- World Map legacy fullscreen overlay: removed
-- menu glow artifact: stabilized
-- visual screenshots: reviewed after v035
+Reason: the previous automated gate did not require repeated portrait + landscape mobile evidence. Owner physical testing on a real phone, repeated in both orientations, still found the Main Menu and World Map below the required visual quality.
 
-## Visual rubric
+The previous technical results remain useful but are not sufficient for promotion:
+- Windows/Chrome technical smoke: 10.0/10 PASS
+- Options touch Back: functional
+- camera/background gameplay fix: independently validated
+- no crash in the menu/map flow
 
-- Composition / hierarchy: 1.75 / 2.0
-- Legibility / contrast: 0.90 / 1.0
-- Responsive mobile / desktop: 1.35 / 1.5
-- Touch interaction clarity: 1.50 / 1.5
-- Art / theme consistency: 1.35 / 1.5
-- Animation / feedback / finish: 0.85 / 1.0
-- No artifacts / crops / overlaps: 1.00 / 1.0
-- Functional / narrative coherence: 0.50 / 0.5
+However, visual/UX promotion is blocked until the new repeated-orientation gate passes.
 
-**TOTAL: 9.20 / 10.00**
+## Mandatory evidence before re-promotion
+For Main Menu and World Map, each must have:
+- 3 portrait captures including reload/resize/re-entry;
+- 3 landscape captures including reload/resize/re-entry;
+- 1 extreme small viewport capture;
+- 1 wide desktop capture;
+- no clipping, overlap, dead space or awkward composition;
+- buttons and focal art positioned intentionally in both orientations;
+- visual score >=9.0/10 separately in portrait and landscape;
+- no unresolved Owner QA objection.
 
-Promoted Pages chain: v031 -> v032 -> v033 -> v034 -> v035.
-
-## Next active block
-
-**W01-L01 Visual & Interaction Rebuild**
-
-Scope: keys/doors, terrain/pit treatment, collision grounding, scene density, meaningful object collisions, supported vines and section-by-section visual polish.
-
-This next block is independently subject to the same >=9.0/10 gate before any further progression.
+## Consequence
+W01-L01 Visual & Interaction Rebuild is temporarily **frozen from promotion**. Candidate work may remain in GitHub, but no W01-L01 visual rebuild is promoted to Pages until Main Menu + World Map pass the strengthened gate.
