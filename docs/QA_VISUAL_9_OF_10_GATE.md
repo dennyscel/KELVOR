@@ -8,7 +8,8 @@ Regra operacional do projeto: nenhum bloco visual/UX é promovido ao próximo bl
 - crash/erro JS durante o fluxo;
 - fundo/camada/objeto com artefato visual evidente;
 - elemento interativo sem feedback ou função incoerente;
-- regressão de física, combate, save, progressão ou critérios travados.
+- regressão de física, combate, save, progressão ou critérios travados;
+- qualquer reprovação de Owner QA físico no celular nas telas/fluxos que o Owner conseguiu reproduzir.
 
 ## Régua 10 pontos
 1. Composição e hierarquia visual — 2.0
@@ -20,9 +21,18 @@ Regra operacional do projeto: nenhum bloco visual/UX é promovido ao próximo bl
 7. Ausência de artefatos/recortes/overlaps — 1.0
 8. Coerência funcional/narrativa do elemento — 0.5
 
-PASS: >= 9.0/10 e nenhum hard fail.
+PASS: >= 9.0/10, nenhum hard fail e nenhuma reprovação Owner QA ainda aberta.
+
+## Evidência visual obrigatória para UI/mobile
+Para cada tela crítica do bloco, capturar e revisar no mínimo:
+- 3 capturas em portrait de celular, incluindo reload/resize;
+- 3 capturas em landscape de celular, incluindo reload/resize;
+- 1 viewport pequena extrema;
+- 1 desktop/landscape amplo.
+
+As capturas repetidas devem confirmar que o layout continua correto após mudança de orientação, reload e nova entrada na tela. Uma única captura bonita não vale como PASS.
 
 ## Ciclo obrigatório
-Implementar -> smoke técnico -> smoke visual Chrome -> capturas críticas -> nota -> corrigir -> repetir -> somente então publicar/promover.
+Implementar -> smoke técnico -> smoke visual Chrome -> capturas repetidas portrait/landscape -> nota -> corrigir -> repetir -> somente então publicar/promover.
 
-Owner QA físico no celular continua valendo como evidência superior para defeitos perceptivos que automação não detecta.
+Owner QA físico no celular é evidência superior para defeitos perceptivos que a automação não detecta. Se o Owner reprovar uma tela de forma reproduzível, a nota automática anterior é anulada e o bloco é reaberto.
