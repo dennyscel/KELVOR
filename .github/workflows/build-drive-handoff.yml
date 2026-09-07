@@ -1,0 +1,119 @@
+name: KELVOR Build Drive Handoff
+
+on:
+  push:
+    paths:
+      - 'handoff/**'
+      - '.github/workflows/build-drive-handoff.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      RELEASE_ID: '383144921'
+      RELEASE_ASSET: 'KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905.zip'
+      RELEASE_SHA256: '77e50fde0ac6fc392237616d2842814a92a6d6d392a54487b38321c339b2d36e'
+      QA_ARTIFACT_ID: '10011026930'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Prepare bundle
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/KELVOR_MASTER_HANDOFF_20260907"
+          mkdir -p "$ROOT/00_START_HERE" "$ROOT/01_REPOSITORY_SNAPSHOT" "$ROOT/02_RELEASE_AND_GAME_BASE" "$ROOT/03_EDITING_PATCHES_AND_SCRIPTS" "$ROOT/04_QA_EVIDENCE" "$ROOT/05_HANDOFF_DOCS" "$ROOT/06_CHECKSUMS_AND_MANIFESTS"
+
+          cp handoff/KELVOR_MASTER_HANDOFF_20260907.md "$ROOT/00_START_HERE/"
+          cp handoff/NEXT_CHAT_PROMPT_KELVOR_20260907.txt "$ROOT/00_START_HERE/"
+          cp handoff/KELVOR_MASTER_HANDOFF_20260907.md "$ROOT/05_HANDOFF_DOCS/"
+          cp handoff/NEXT_CHAT_PROMPT_KELVOR_20260907.txt "$ROOT/05_HANDOFF_DOCS/"
+
+          HEAD_SHA="$(git rev-parse HEAD)"
+          git archive --format=zip --output="$ROOT/01_REPOSITORY_SNAPSHOT/KELVOR_GITHUB_REPOSITORY_SNAPSHOT_${HEAD_SHA}.zip" HEAD
+
+          mkdir -p "$ROOT/03_EDITING_PATCHES_AND_SCRIPTS/repository_extract"
+          cp -a patches "$ROOT/03_EDITING_PATCHES_AND_SCRIPTS/repository_extract/"
+          cp -a scripts "$ROOT/03_EDITING_PATCHES_AND_SCRIPTS/repository_extract/"
+          cp -a .github/workflows "$ROOT/03_EDITING_PATCHES_AND_SCRIPTS/repository_extract/workflows"
+          cp -a docs "$ROOT/03_EDITING_PATCHES_AND_SCRIPTS/repository_extract/"
+          cp README.md SHA256SUMS.txt "$ROOT/03_EDITING_PATCHES_AND_SCRIPTS/repository_extract/"
+
+          RELEASE_META="$(gh api "/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID")"
+          ASSET_ID="$(printf '%s' "$RELEASE_META" | jq -r --arg n "$RELEASE_ASSET" '.assets[] | select(.name==$n) | .id' | head -n1)"
+          test -n "$ASSET_ID"
+          curl --fail --location --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" -H "X-GitHub-Api-Version: 2022-11-28" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/assets/$ASSET_ID" --output "$ROOT/02_RELEASE_AND_GAME_BASE/$RELEASE_ASSET"
+          GOT_RELEASE="$(sha256sum "$ROOT/02_RELEASE_AND_GAME_BASE/$RELEASE_ASSET" | awk '{print $1}')"
+          test "$GOT_RELEASE" = "$RELEASE_SHA256"
+
+          curl --fail --location --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/$QA_ARTIFACT_ID/zip" --output "$ROOT/04_QA_EVIDENCE/KELVOR-RC39-MENU-MAP-V045-11.zip"
+          cp docs/qa/MENU_MAP_V039_LATEST.json "$ROOT/04_QA_EVIDENCE/"
+
+          cp SHA256SUMS.txt "$ROOT/06_CHECKSUMS_AND_MANIFESTS/REPOSITORY_SHA256SUMS.txt"
+          cat > "$ROOT/06_CHECKSUMS_AND_MANIFESTS/KELVOR_HANDOFF_MANIFEST_20260907.json" <<JSON
+          {
+            "project": "KELVOR",
+            "repository": "$GITHUB_REPOSITORY",
+            "branch": "main",
+            "head": "$HEAD_SHA",
+            "locked": false,
+            "pages": "https://dennyscel.github.io/KELVOR/",
+            "release_asset": "$RELEASE_ASSET",
+            "release_sha256": "$RELEASE_SHA256",
+            "latest_menu_map_qa_artifact_id": "$QA_ARTIFACT_ID",
+            "qa_rule": "zero hard-fail and every critical block >= 9.0/10 before promotion"
+          }
+          JSON
+
+          (cd "$ROOT" && find . -type f ! -name 'HANDOFF_SHA256SUMS.txt' -print0 | sort -z | xargs -0 sha256sum > 06_CHECKSUMS_AND_MANIFESTS/HANDOFF_SHA256SUMS.txt)
+          BUNDLE="$RUNNER_TEMP/KELVOR_MASTER_HANDOFF_20260907.zip"
+          (cd "$RUNNER_TEMP" && zip -qr "$BUNDLE" KELVOR_MASTER_HANDOFF_20260907)
+          BUNDLE_SHA="$(sha256sum "$BUNDLE" | awk '{print $1}')"
+          echo "$BUNDLE_SHA  $(basename "$BUNDLE")" > "$RUNNER_TEMP/KELVOR_MASTER_HANDOFF_20260907.sha256"
+          echo "BUNDLE=$BUNDLE" >> "$GITHUB_ENV"
+          echo "BUNDLE_SHA_FILE=$RUNNER_TEMP/KELVOR_MASTER_HANDOFF_20260907.sha256" >> "$GITHUB_ENV"
+          echo "HEAD_SHA=$HEAD_SHA" >> "$GITHUB_ENV"
+          echo "BUNDLE_SHA=$BUNDLE_SHA" >> "$GITHUB_ENV"
+
+      - name: Upload complete handoff artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KELVOR-MASTER-DRIVE-HANDOFF-${{ github.run_number }}
+          path: |
+            ${{ env.BUNDLE }}
+            ${{ env.BUNDLE_SHA_FILE }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Record handoff pointer
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ART_ID="$(gh api "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts" --jq '.artifacts[0].id')"
+          mkdir -p docs/qa
+          cat > docs/qa/DRIVE_HANDOFF_LATEST.json <<JSON
+          {
+            "workflow_run_id": "$GITHUB_RUN_ID",
+            "workflow_run_number": "$GITHUB_RUN_NUMBER",
+            "artifact_id": "$ART_ID",
+            "snapshot_head": "$HEAD_SHA",
+            "bundle_sha256": "$BUNDLE_SHA",
+            "locked": false
+          }
+          JSON
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/qa/DRIVE_HANDOFF_LATEST.json
+          if ! git diff --cached --quiet; then git commit -m 'qa: record complete Drive handoff bundle'; git push origin HEAD:main; fi
