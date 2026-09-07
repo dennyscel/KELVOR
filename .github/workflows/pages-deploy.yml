@@ -7,6 +7,7 @@ on:
     paths:
       - 'patches/101-owner-mobile-visual-feedback-rc39-v031.js'
       - 'patches/102-owner-experience-rc39-v032.js'
+      - 'patches/103-owner-experience-gate-hotfix-rc39-v033.js'
       - '.github/workflows/pages-deploy.yml'
   workflow_dispatch:
     inputs:
@@ -35,6 +36,7 @@ env:
   EXPECTED_SHA256: 77e50fde0ac6fc392237616d2842814a92a6d6d392a54487b38321c339b2d36e
   OWNER_VISUAL_PATCH: 101-owner-mobile-visual-feedback-rc39-v031.js
   OWNER_EXPERIENCE_PATCH: 102-owner-experience-rc39-v032.js
+  OWNER_GATE_PATCH: 103-owner-experience-gate-hotfix-rc39-v033.js
 
 jobs:
   deploy:
@@ -93,10 +95,10 @@ jobs:
           cp -a "$ROOT/web/." "$RUNNER_TEMP/site/"
           REL="$RUNNER_TEMP/site/release_v81_campaign_presentation_rc39_v004_20260905"
           mkdir -p "$REL/src/runtime/v82"
-          for PATCH in "$OWNER_VISUAL_PATCH" "$OWNER_EXPERIENCE_PATCH"; do
+          for PATCH in "$OWNER_VISUAL_PATCH" "$OWNER_EXPERIENCE_PATCH" "$OWNER_GATE_PATCH"; do
             cp "$GITHUB_WORKSPACE/patches/$PATCH" "$REL/src/runtime/v82/$PATCH"
           done
-          python - "$RUNNER_TEMP/site/index.html" "$OWNER_VISUAL_PATCH" "$OWNER_EXPERIENCE_PATCH" <<'PY'
+          python - "$RUNNER_TEMP/site/index.html" "$OWNER_VISUAL_PATCH" "$OWNER_EXPERIENCE_PATCH" "$OWNER_GATE_PATCH" <<'PY'
           import sys
           from pathlib import Path
           p=Path(sys.argv[1]); names=sys.argv[2:]
@@ -114,8 +116,10 @@ jobs:
           test -f "$RUNNER_TEMP/site/index.html"
           grep -F "$OWNER_VISUAL_PATCH" "$RUNNER_TEMP/site/index.html"
           grep -F "$OWNER_EXPERIENCE_PATCH" "$RUNNER_TEMP/site/index.html"
+          grep -F "$OWNER_GATE_PATCH" "$RUNNER_TEMP/site/index.html"
           test -f "$REL/src/runtime/v82/$OWNER_VISUAL_PATCH"
           test -f "$REL/src/runtime/v82/$OWNER_EXPERIENCE_PATCH"
+          test -f "$REL/src/runtime/v82/$OWNER_GATE_PATCH"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
