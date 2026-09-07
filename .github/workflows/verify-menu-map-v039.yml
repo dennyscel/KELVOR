@@ -1,4 +1,4 @@
-name: KELVOR RC39 Menu Map Responsive v039-v042
+name: KELVOR RC39 Menu Map Responsive v039-v043
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
       - 'patches/110-menu-map-responsive-hotfix-v040.js'
       - 'patches/111-menu-map-premium-portrait-v041.js'
       - 'patches/112-menu-map-secondary-polish-v042.js'
+      - 'patches/113-menu-secondary-final-polish-v043.js'
       - 'scripts/verify_menu_map_v042.py'
       - '.github/workflows/verify-menu-map-v039.yml'
   workflow_dispatch:
@@ -31,6 +32,7 @@ jobs:
       PATCH40: 110-menu-map-responsive-hotfix-v040.js
       PATCH41: 111-menu-map-premium-portrait-v041.js
       PATCH42: 112-menu-map-secondary-polish-v042.js
+      PATCH43: 113-menu-secondary-final-polish-v043.js
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -39,7 +41,7 @@ jobs:
       - name: Prepare result directory
         shell: pwsh
         run: |
-          $out="$env:RUNNER_TEMP\menu-map-v042-result"
+          $out="$env:RUNNER_TEMP\menu-map-v043-result"
           New-Item -ItemType Directory -Force -Path $out | Out-Null
           "RESULT_DIR=$out" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Locate Google Chrome
@@ -63,19 +65,19 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Release asset download failed'}
           $got=(Get-FileHash -LiteralPath $out -Algorithm SHA256).Hash.ToLowerInvariant()
           if($got -ne $env:EXPECTED_SHA256){throw "SHA mismatch $got"}
-          $dst="$env:RUNNER_TEMP\menu-map-v042"
+          $dst="$env:RUNNER_TEMP\menu-map-v043"
           New-Item -ItemType Directory -Force -Path $dst | Out-Null
           Expand-Archive -LiteralPath $out -DestinationPath $dst -Force
           $root=Get-ChildItem -Path $dst -Directory | Where-Object {$_.Name -eq 'KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905'} | Select-Object -First 1
           if(-not $root){throw 'Candidate root missing'}
           "WEB_ROOT=$($root.FullName)\web" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      - name: Inject responsive chain through v042
+      - name: Inject responsive chain through v043
         shell: pwsh
         run: |
           $rel="$env:WEB_ROOT\release_v81_campaign_presentation_rc39_v004_20260905"
           $runtime="$rel\src\runtime\v82"
           New-Item -ItemType Directory -Force -Path $runtime | Out-Null
-          $patches=@($env:PATCH31,$env:PATCH32,$env:PATCH33,$env:PATCH34,$env:PATCH35,$env:PATCH39,$env:PATCH40,$env:PATCH41,$env:PATCH42)
+          $patches=@($env:PATCH31,$env:PATCH32,$env:PATCH33,$env:PATCH34,$env:PATCH35,$env:PATCH39,$env:PATCH40,$env:PATCH41,$env:PATCH42,$env:PATCH43)
           foreach($p in $patches){Copy-Item "$env:GITHUB_WORKSPACE\patches\$p" "$runtime\$p" -Force}
           $index="$env:WEB_ROOT\index.html"
           $text=Get-Content -LiteralPath $index -Raw
@@ -93,7 +95,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: KELVOR-RC39-MENU-MAP-V042-${{ github.run_number }}
+          name: KELVOR-RC39-MENU-MAP-V043-${{ github.run_number }}
           path: ${{ env.RESULT_DIR }}/**
           if-no-files-found: error
           retention-days: 30
@@ -109,7 +111,7 @@ jobs:
           $raw = if(Test-Path "$env:RESULT_DIR\RESULT.json"){Get-Content -LiteralPath "$env:RESULT_DIR\RESULT.json" -Raw}else{'{"status":"NO_RESULT"}'}
           try{$obj=$raw|ConvertFrom-Json}catch{$obj=[ordered]@{status='INVALID_RESULT';raw=$raw}}
           $meta=[ordered]@{
-            gate='MENU_MAP_V042'
+            gate='MENU_MAP_V043'
             run_id='${{ github.run_id }}'
             run_number='${{ github.run_number }}'
             head_sha='${{ github.sha }}'
@@ -118,9 +120,9 @@ jobs:
           }
           $meta|ConvertTo-Json -Depth 30|Set-Content -LiteralPath docs/qa/MENU_MAP_V039_LATEST.json -Encoding utf8
           git add docs/qa/MENU_MAP_V039_LATEST.json
-          if(-not (git diff --cached --quiet)){git commit -m "qa: record v042 menu map gate run ${{ github.run_number }}";git push origin HEAD:main}
+          if(-not (git diff --cached --quiet)){git commit -m "qa: record v043 menu map gate run ${{ github.run_number }}";git push origin HEAD:main}
       - name: Enforce smoke result
         if: always()
         shell: pwsh
         run: |
-          if('${{ steps.smoke.outcome }}' -ne 'success'){throw 'v042 smoke failed'}
+          if('${{ steps.smoke.outcome }}' -ne 'success'){throw 'v043 smoke failed'}
