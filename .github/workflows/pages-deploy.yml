@@ -6,6 +6,7 @@ on:
   push:
     paths:
       - 'patches/101-owner-mobile-visual-feedback-rc39-v031.js'
+      - 'patches/102-owner-experience-rc39-v032.js'
       - '.github/workflows/pages-deploy.yml'
   workflow_dispatch:
     inputs:
@@ -33,6 +34,7 @@ env:
   EXPECTED_ASSET: KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905.zip
   EXPECTED_SHA256: 77e50fde0ac6fc392237616d2842814a92a6d6d392a54487b38321c339b2d36e
   OWNER_VISUAL_PATCH: 101-owner-mobile-visual-feedback-rc39-v031.js
+  OWNER_EXPERIENCE_PATCH: 102-owner-experience-rc39-v032.js
 
 jobs:
   deploy:
@@ -80,7 +82,7 @@ jobs:
           test "$GOT" = "$(echo "$EXPECTED" | tr 'A-F' 'a-f')"
           echo "CAMPAIGN_ZIP=$OUT" >> "$GITHUB_ENV"
 
-      - name: Build static Pages payload + owner mobile hotfix
+      - name: Build static Pages payload + owner experience hotfixes
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/candidate" "$RUNNER_TEMP/site"
@@ -91,22 +93,29 @@ jobs:
           cp -a "$ROOT/web/." "$RUNNER_TEMP/site/"
           REL="$RUNNER_TEMP/site/release_v81_campaign_presentation_rc39_v004_20260905"
           mkdir -p "$REL/src/runtime/v82"
-          cp "$GITHUB_WORKSPACE/patches/$OWNER_VISUAL_PATCH" "$REL/src/runtime/v82/$OWNER_VISUAL_PATCH"
-          python - "$RUNNER_TEMP/site/index.html" "$OWNER_VISUAL_PATCH" <<'PY'
+          for PATCH in "$OWNER_VISUAL_PATCH" "$OWNER_EXPERIENCE_PATCH"; do
+            cp "$GITHUB_WORKSPACE/patches/$PATCH" "$REL/src/runtime/v82/$PATCH"
+          done
+          python - "$RUNNER_TEMP/site/index.html" "$OWNER_VISUAL_PATCH" "$OWNER_EXPERIENCE_PATCH" <<'PY'
           import sys
           from pathlib import Path
-          p=Path(sys.argv[1]); name=sys.argv[2]
+          p=Path(sys.argv[1]); names=sys.argv[2:]
           text=p.read_text(encoding='utf-8')
-          tag=f'<script src="./src/runtime/v82/{name}"></script>'
-          if tag not in text:
-              if '</body>' not in text: raise SystemExit('index body marker missing')
-              text=text.replace('</body>',tag+'\n</body>')
+          if '</body>' not in text: raise SystemExit('index body marker missing')
+          tags=[]
+          for name in names:
+              tag=f'<script src="./src/runtime/v82/{name}"></script>'
+              if tag not in text: tags.append(tag)
+          if tags:
+              text=text.replace('</body>','\n'.join(tags)+'\n</body>')
               p.write_text(text,encoding='utf-8')
           PY
           touch "$RUNNER_TEMP/site/.nojekyll"
           test -f "$RUNNER_TEMP/site/index.html"
           grep -F "$OWNER_VISUAL_PATCH" "$RUNNER_TEMP/site/index.html"
+          grep -F "$OWNER_EXPERIENCE_PATCH" "$RUNNER_TEMP/site/index.html"
           test -f "$REL/src/runtime/v82/$OWNER_VISUAL_PATCH"
+          test -f "$REL/src/runtime/v82/$OWNER_EXPERIENCE_PATCH"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
