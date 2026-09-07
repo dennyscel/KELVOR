@@ -90,13 +90,12 @@ jobs:
           touch "$RUNNER_TEMP/site/.nojekyll"
           test -f "$RUNNER_TEMP/site/index.html"
 
-      - name: Configure or enable Pages
+      - name: Configure Pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - uses: actions/upload-pages-artifact@v3
+      - name: Upload playable site
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ runner.temp }}/site
-      - name: Deploy Pages
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
