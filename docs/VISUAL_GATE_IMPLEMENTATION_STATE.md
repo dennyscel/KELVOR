@@ -1,1 +1,0 @@
-Visual gate policy is active. Candidate v034 must pass smoke and visual review before Pages publication.
