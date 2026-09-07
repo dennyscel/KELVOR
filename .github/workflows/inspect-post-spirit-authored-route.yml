@@ -1,0 +1,65 @@
+name: KELVOR RC39 Inspect Post-Spirit Authored Route
+
+on:
+  push:
+    paths:
+      - '.github/workflows/inspect-post-spirit-authored-route.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect-authored-route:
+    runs-on: windows-latest
+    timeout-minutes: 8
+    env:
+      RELEASE_ID: '383144921'
+      EXPECTED_ASSET: KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905.zip
+      EXPECTED_SHA256: 77e50fde0ac6fc392237616d2842814a92a6d6d392a54487b38321c339b2d36e
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and verify published RC39 v004 asset
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $release=(gh api "/repos/$env:GITHUB_REPOSITORY/releases/$env:RELEASE_ID"|ConvertFrom-Json)
+          $asset=$release.assets|Where-Object{$_.name -eq $env:EXPECTED_ASSET}|Select-Object -First 1
+          if(-not $asset){throw 'Required release asset missing'}
+          $out="$env:RUNNER_TEMP\$env:EXPECTED_ASSET"
+          curl.exe --fail --location --silent --show-error -H "Authorization: Bearer $env:GH_TOKEN" -H "Accept: application/octet-stream" -H "X-GitHub-Api-Version: 2022-11-28" "https://api.github.com/repos/$env:GITHUB_REPOSITORY/releases/assets/$($asset.id)" --output "$out"
+          if($LASTEXITCODE -ne 0){throw 'Release asset download failed'}
+          $got=(Get-FileHash -LiteralPath $out -Algorithm SHA256).Hash.ToLowerInvariant()
+          if($got -ne $env:EXPECTED_SHA256){throw "SHA mismatch $got"}
+          $dst="$env:RUNNER_TEMP\rc39-inspect"
+          New-Item -ItemType Directory -Force -Path $dst|Out-Null
+          Expand-Archive -LiteralPath $out -DestinationPath $dst -Force
+          $root=Get-ChildItem -Path $dst -Directory|Where-Object{$_.Name -eq 'KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905'}|Select-Object -First 1
+          if(-not $root){throw 'Candidate root missing'}
+          "CAMPAIGN_ROOT=$($root.FullName)"|Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Extract authored route references
+        shell: pwsh
+        run: |
+          $out="$env:RUNNER_TEMP\post-spirit-authored-route"
+          New-Item -ItemType Directory -Force -Path $out|Out-Null
+          $src="$env:CAMPAIGN_ROOT\web"
+          $patterns=@('27620','27850','28080','ANCIENT_CROSSING','ancientCrossing','ancient_crossing','crossing')
+          $files=Get-ChildItem -Path $src -Recurse -File -Include *.js,*.json,*.html
+          $hits=@()
+          foreach($p in $patterns){$hits += $files|Select-String -Pattern $p -SimpleMatch -ErrorAction SilentlyContinue}
+          $hits=$hits|Sort-Object Path,LineNumber -Unique
+          $report=Join-Path $out 'MATCHES.txt'
+          foreach($h in $hits){"$($h.Path):$($h.LineNumber): $($h.Line.Trim())"|Out-File -FilePath $report -Encoding utf8 -Append}
+          $paths=$hits|Select-Object -ExpandProperty Path -Unique
+          $i=0
+          foreach($f in $paths){$i++;Copy-Item -LiteralPath $f -Destination (Join-Path $out (("{0:D2}_" -f $i)+(Split-Path $f -Leaf))) -Force}
+          @{patterns=$patterns;matchCount=$hits.Count;fileCount=$paths.Count;files=$paths}|ConvertTo-Json -Depth 5|Out-File -FilePath (Join-Path $out 'INDEX.json') -Encoding utf8
+          "INSPECT_OUT=$out"|Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Upload authored route inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: KELVOR-RC39-POST-SPIRIT-AUTHORED-ROUTE-${{ github.run_number }}
+          path: ${{ env.INSPECT_OUT }}/**
+          if-no-files-found: error
+          retention-days: 30
