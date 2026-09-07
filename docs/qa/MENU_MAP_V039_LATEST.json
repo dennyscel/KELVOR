@@ -1,38 +1,44 @@
 {
-  "gate": "MENU_MAP_V039_V040",
-  "run_id": "34099469906",
-  "run_number": "4",
-  "head_sha": "b8be8eafee3376a94053be54c7ea523efc2ac05e",
+  "gate": "MENU_MAP_V041",
+  "run_id": "34099993958",
+  "run_number": "5",
+  "head_sha": "7af183c3df570d9bcc54c3cf45ff9718618bf50a",
   "smoke_outcome": "success",
   "result": {
     "checks": {
-      "menu_portrait_buttons_inside": true,
-      "menu_portrait_touch_targets": true,
-      "menu_portrait_balanced": true,
-      "menu_landscape_buttons_inside": true,
-      "menu_landscape_balanced": true,
-      "menu_repeat_stable": true,
-      "options_touch_back_preserved": true,
-      "map_portrait_island_large": true,
-      "map_portrait_controls_inside": true,
-      "map_portrait_play_touch": true,
-      "map_no_rotate_overlay": true,
-      "map_text_present": true,
-      "map_landscape_island_large": true,
-      "map_landscape_controls_inside": true,
-      "map_repeat_stable": true,
-      "map_reentry_not_blank": true,
-      "reload_map_not_blank": true,
-      "desktop_menu_inside": true
+      "portrait_menu_exclusive": true,
+      "portrait_menu_v041": true,
+      "portrait_menu_controls": true,
+      "portrait_menu_compact": true,
+      "landscape_menu_exclusive": true,
+      "landscape_menu_controls": true,
+      "portrait_menu_repeat": true,
+      "options_exclusive": true,
+      "options_back_returns_menu": true,
+      "portrait_map_exclusive": true,
+      "portrait_map_large": true,
+      "portrait_map_controls": true,
+      "portrait_map_no_rotate_overlay": true,
+      "landscape_map_exclusive": true,
+      "landscape_map_large": true,
+      "landscape_map_controls": true,
+      "portrait_map_repeat": true,
+      "menu_reentry_exclusive": true,
+      "map_reentry_exclusive": true,
+      "reload_menu_exclusive": true,
+      "reload_map_exclusive": true,
+      "desktop_menu_exclusive": true,
+      "desktop_menu_controls": true
     },
     "captures": [
       "menu_portrait_1.png",
       "menu_landscape_1.png",
       "menu_portrait_2.png",
+      "options_portrait.png",
       "map_portrait_1.png",
       "map_landscape_1.png",
       "map_portrait_2.png",
-      "map_landscape_reentry.png",
+      "map_portrait_reentry.png",
       "menu_portrait_reload.png",
       "map_portrait_reload.png",
       "menu_desktop.png"
@@ -40,19 +46,18 @@
     "status": "PASS",
     "menu_portrait_1": {
       "badge": {
-        "visible": true,
         "x": 320,
-        "y": 569.8176
+        "y": 514.8352
       },
       "buttons": [
         {
-          "h": 48,
+          "h": 50,
           "inside": true,
           "label": "JOGAR AGORA",
           "visible": true,
           "w": 350,
           "x": 320,
-          "y": 674.784
+          "y": 599.808
         },
         {
           "h": 42,
@@ -61,7 +66,7 @@
           "visible": true,
           "w": 158,
           "x": 185.6,
-          "y": 754.7583999999999
+          "y": 679.7824
         },
         {
           "h": 42,
@@ -70,7 +75,7 @@
           "visible": true,
           "w": 158,
           "x": 454.4,
-          "y": 754.7583999999999
+          "y": 679.7824
         },
         {
           "h": 40,
@@ -79,7 +84,7 @@
           "visible": true,
           "w": 200,
           "x": 320,
-          "y": 824.7359999999999
+          "y": 749.76
         },
         {
           "h": 36,
@@ -93,33 +98,29 @@
       ],
       "h": 999.68,
       "hero": {
-        "visible": true,
+        "scale": 1.24,
         "x": 320,
-        "y": 489.17671651050495
+        "y": 429.2493476465923
       },
       "ori": "portrait",
-      "texts": [
-        "PLANÍCIES VERDES",
-        "KELVOR",
-        "UMA GRANDE AVENTURA EM CINCO MUNDOS",
-        "EXPLORAR  •  DESCOBRIR  •  VENCER",
-        "⛶  TELA CHEIA",
-        "JOGAR AGORA",
-        "MÚSICA",
-        "OPÇÕES",
-        "CRÉDITOS",
-        "DENNYS PAVANELLI"
-      ],
+      "premium": true,
       "title": {
-        "visible": true,
         "x": 320,
-        "y": 104.9664
+        "y": 84.9728
+      },
+      "v40": {
+        "portraitPoster": true,
+        "stableResize": true
+      },
+      "v41": {
+        "chapter": true,
+        "compactCTA": true,
+        "portraitPremium": true
       },
       "w": 640
     },
     "menu_landscape_1": {
       "badge": {
-        "visible": true,
         "x": 898.2709677419356,
         "y": 311.4
       },
@@ -172,46 +173,41 @@
       ],
       "h": 360,
       "hero": {
-        "visible": true,
+        "scale": 1.06,
         "x": 898.2709677419356,
-        "y": 272.9142848634329
+        "y": 272.7673760871757
       },
       "ori": "landscape",
-      "texts": [
-        "PLANÍCIES VERDES",
-        "KELVOR",
-        "UMA GRANDE AVENTURA EM CINCO MUNDOS",
-        "EXPLORAR  •  DESCOBRIR  •  VENCER",
-        "⛶  TELA CHEIA",
-        "JOGAR AGORA",
-        "MÚSICA",
-        "OPÇÕES",
-        "CRÉDITOS",
-        "DENNYS PAVANELLI",
-        "MOBILE  •  DESKTOP"
-      ],
+      "premium": true,
       "title": {
-        "visible": true,
         "x": 354.5806451612903,
         "y": 46.800000000000004
+      },
+      "v40": {
+        "portraitPoster": false,
+        "stableResize": true
+      },
+      "v41": {
+        "chapter": true,
+        "compactCTA": true,
+        "portraitPremium": true
       },
       "w": 1181.9354838709678
     },
     "menu_portrait_2": {
       "badge": {
-        "visible": true,
         "x": 320,
-        "y": 569.8176
+        "y": 514.8352
       },
       "buttons": [
         {
-          "h": 48,
+          "h": 50,
           "inside": true,
           "label": "JOGAR AGORA",
           "visible": true,
           "w": 350,
           "x": 320,
-          "y": 674.784
+          "y": 599.808
         },
         {
           "h": 42,
@@ -220,7 +216,7 @@
           "visible": true,
           "w": 158,
           "x": 185.6,
-          "y": 754.7583999999999
+          "y": 679.7824
         },
         {
           "h": 42,
@@ -229,7 +225,7 @@
           "visible": true,
           "w": 158,
           "x": 454.4,
-          "y": 754.7583999999999
+          "y": 679.7824
         },
         {
           "h": 40,
@@ -238,7 +234,7 @@
           "visible": true,
           "w": 200,
           "x": 320,
-          "y": 824.7359999999999
+          "y": 749.76
         },
         {
           "h": 36,
@@ -252,27 +248,24 @@
       ],
       "h": 999.68,
       "hero": {
-        "visible": true,
+        "scale": 1.24,
         "x": 320,
-        "y": 488.5166612871599
+        "y": 428.42329079336946
       },
       "ori": "portrait",
-      "texts": [
-        "PLANÍCIES VERDES",
-        "KELVOR",
-        "UMA GRANDE AVENTURA EM CINCO MUNDOS",
-        "EXPLORAR  •  DESCOBRIR  •  VENCER",
-        "⛶  TELA CHEIA",
-        "JOGAR AGORA",
-        "MÚSICA",
-        "OPÇÕES",
-        "CRÉDITOS",
-        "DENNYS PAVANELLI"
-      ],
+      "premium": true,
       "title": {
-        "visible": true,
         "x": 320,
-        "y": 104.9664
+        "y": 84.9728
+      },
+      "v40": {
+        "portraitPoster": true,
+        "stableResize": true
+      },
+      "v41": {
+        "chapter": true,
+        "compactCTA": true,
+        "portraitPremium": true
       },
       "w": 640
     },
@@ -356,6 +349,13 @@
         "DISPONÍVEL",
         "TOQUE NOS MARCADORES OU USE OS BOTÕES"
       ],
+      "v40": {
+        "mapFocus": true,
+        "stableResize": true
+      },
+      "v41": {
+        "mapHeaderPolish": true
+      },
       "w": 640
     },
     "map_landscape_1": {
@@ -440,6 +440,13 @@
         "DISPONÍVEL",
         "TOQUE NOS MARCADORES  •  JOGAR PARA ENTRAR"
       ],
+      "v40": {
+        "mapFocus": true,
+        "stableResize": true
+      },
+      "v41": {
+        "mapHeaderPolish": true
+      },
       "w": 1181.9354838709678
     },
     "map_portrait_2": {
@@ -522,177 +529,17 @@
         "DISPONÍVEL",
         "TOQUE NOS MARCADORES OU USE OS BOTÕES"
       ],
-      "w": 640
-    },
-    "map_landscape_reentry": {
-      "buttons": [
-        {
-          "h": 44,
-          "inside": true,
-          "label": "ANTERIOR",
-          "visible": true,
-          "w": 118,
-          "x": 518.7870967741935,
-          "y": 318
-        },
-        {
-          "h": 48,
-          "inside": true,
-          "label": "JOGAR FASE",
-          "visible": true,
-          "w": 200,
-          "x": 759.9677419354839,
-          "y": 318
-        },
-        {
-          "h": 44,
-          "inside": true,
-          "label": "PRÓXIMA",
-          "visible": true,
-          "w": 118,
-          "x": 1001.1483870967743,
-          "y": 318
-        },
-        {
-          "h": 36,
-          "inside": true,
-          "label": "MUNDO ◀",
-          "visible": false,
-          "w": 118,
-          "x": 115,
-          "y": 330
-        },
-        {
-          "h": 36,
-          "inside": true,
-          "label": "MUNDO ▶",
-          "visible": false,
-          "w": 118,
-          "x": 247,
-          "y": 330
-        },
-        {
-          "h": 32,
-          "inside": true,
-          "label": "⛶  TELA CHEIA",
-          "visible": true,
-          "w": 150,
-          "x": 1096.9354838709678,
-          "y": 26
-        }
-      ],
-      "h": 360,
-      "map": {
-        "alpha": 1,
-        "h": 313.2,
-        "visible": true,
-        "w": 321.82018348623853,
-        "x": 777.5651612903226,
-        "y": 154.8
+      "v40": {
+        "mapFocus": true,
+        "stableResize": true
       },
-      "nodeState": "DISPONÍVEL",
-      "nodeTitle": "TRILHA DO DESPERTAR",
-      "ori": "landscape",
-      "selected": "L01",
-      "texts": [
-        "⛶  TELA CHEIA",
-        "ANTERIOR",
-        "JOGAR FASE",
-        "PRÓXIMA",
-        "PLANÍCIES VERDES",
-        "CAPÍTULO 1  •  O DESPERTAR",
-        "Uma trilha viva entre raízes,\nruínas e segredos da floresta.",
-        "TRILHA DO DESPERTAR",
-        "DISPONÍVEL",
-        "TOQUE NOS MARCADORES  •  JOGAR PARA ENTRAR"
-      ],
-      "w": 1181.9354838709678
-    },
-    "map_portrait_reload": {
-      "buttons": [
-        {
-          "h": 46,
-          "inside": true,
-          "label": "ANTERIOR",
-          "visible": true,
-          "w": 106,
-          "x": 108.80000000000001,
-          "y": 789.7472
-        },
-        {
-          "h": 50,
-          "inside": true,
-          "label": "JOGAR FASE",
-          "visible": true,
-          "w": 178,
-          "x": 320,
-          "y": 789.7472
-        },
-        {
-          "h": 46,
-          "inside": true,
-          "label": "PRÓXIMA",
-          "visible": true,
-          "w": 106,
-          "x": 531.1999999999999,
-          "y": 789.7472
-        },
-        {
-          "h": 38,
-          "inside": true,
-          "label": "MUNDO ◀",
-          "visible": false,
-          "w": 120,
-          "x": 192,
-          "y": 859.7248
-        },
-        {
-          "h": 38,
-          "inside": true,
-          "label": "MUNDO ▶",
-          "visible": false,
-          "w": 120,
-          "x": 448,
-          "y": 859.7248
-        },
-        {
-          "h": 36,
-          "inside": true,
-          "label": "⛶  TELA CHEIA",
-          "visible": true,
-          "w": 118,
-          "x": 571,
-          "y": 28
-        }
-      ],
-      "h": 999.68,
-      "map": {
-        "alpha": 1,
-        "h": 499.84,
-        "visible": true,
-        "w": 513.5970642201835,
-        "x": 320,
-        "y": 344.8896
+      "v41": {
+        "mapHeaderPolish": true
       },
-      "nodeState": "DISPONÍVEL",
-      "nodeTitle": "TRILHA DO DESPERTAR",
-      "ori": "portrait",
-      "selected": "L01",
-      "texts": [
-        "⛶  TELA CHEIA",
-        "ANTERIOR",
-        "JOGAR FASE",
-        "PRÓXIMA",
-        "MUNDO 01  •  PLANÍCIES VERDES",
-        "TRILHA DO DESPERTAR",
-        "DISPONÍVEL",
-        "TOQUE NOS MARCADORES OU USE OS BOTÕES"
-      ],
       "w": 640
     },
     "menu_desktop": {
       "badge": {
-        "visible": true,
         "x": 770.1333333333333,
         "y": 311.4
       },
@@ -745,28 +592,24 @@
       ],
       "h": 360,
       "hero": {
-        "visible": true,
+        "scale": 1.06,
         "x": 770.1333333333333,
-        "y": 272.6609460642803
+        "y": 272.44721708269276
       },
       "ori": "landscape",
-      "texts": [
-        "PLANÍCIES VERDES",
-        "KELVOR",
-        "UMA GRANDE AVENTURA EM CINCO MUNDOS",
-        "EXPLORAR  •  DESCOBRIR  •  VENCER",
-        "⛶  TELA CHEIA",
-        "JOGAR AGORA",
-        "MÚSICA",
-        "OPÇÕES",
-        "CRÉDITOS",
-        "DENNYS PAVANELLI",
-        "MOBILE  •  DESKTOP"
-      ],
+      "premium": true,
       "title": {
-        "visible": true,
         "x": 304,
         "y": 46.800000000000004
+      },
+      "v40": {
+        "portraitPoster": false,
+        "stableResize": true
+      },
+      "v41": {
+        "chapter": true,
+        "compactCTA": true,
+        "portraitPremium": true
       },
       "w": 1013.3333333333334
     },
