@@ -1,7 +1,7 @@
 {
   "gate": "MENU_MAP_V041",
-  "run_id": "34099993958",
-  "run_number": "5",
+  "run_id": "34100013902",
+  "run_number": "6",
   "head_sha": "7af183c3df570d9bcc54c3cf45ff9718618bf50a",
   "smoke_outcome": "success",
   "result": {
@@ -100,7 +100,7 @@
       "hero": {
         "scale": 1.24,
         "x": 320,
-        "y": 429.2493476465923
+        "y": 429.2764391783182
       },
       "ori": "portrait",
       "premium": true,
@@ -175,7 +175,7 @@
       "hero": {
         "scale": 1.06,
         "x": 898.2709677419356,
-        "y": 272.7673760871757
+        "y": 272.7509563576723
       },
       "ori": "landscape",
       "premium": true,
@@ -250,7 +250,7 @@
       "hero": {
         "scale": 1.24,
         "x": 320,
-        "y": 428.42329079336946
+        "y": 428.34226695269047
       },
       "ori": "portrait",
       "premium": true,
@@ -594,7 +594,7 @@
       "hero": {
         "scale": 1.06,
         "x": 770.1333333333333,
-        "y": 272.44721708269276
+        "y": 272.45087071749185
       },
       "ori": "landscape",
       "premium": true,
