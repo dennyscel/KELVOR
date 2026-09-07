@@ -1,96 +1,84 @@
 {
-  "gate": "MENU_MAP_V041",
-  "run_id": "34100013902",
-  "run_number": "6",
-  "head_sha": "7af183c3df570d9bcc54c3cf45ff9718618bf50a",
-  "smoke_outcome": "success",
+  "gate": "MENU_MAP_V042",
+  "run_id": "34100825208",
+  "run_number": "7",
+  "head_sha": "56494b9f174cb453cb86617c288f6c21b5dc6135",
+  "smoke_outcome": "failure",
   "result": {
     "checks": {
-      "portrait_menu_exclusive": true,
-      "portrait_menu_v041": true,
-      "portrait_menu_controls": true,
-      "portrait_menu_compact": true,
-      "landscape_menu_exclusive": true,
-      "landscape_menu_controls": true,
-      "portrait_menu_repeat": true,
-      "options_exclusive": true,
-      "options_back_returns_menu": true,
-      "portrait_map_exclusive": true,
-      "portrait_map_large": true,
-      "portrait_map_controls": true,
-      "portrait_map_no_rotate_overlay": true,
-      "landscape_map_exclusive": true,
-      "landscape_map_large": true,
-      "landscape_map_controls": true,
-      "portrait_map_repeat": true,
-      "menu_reentry_exclusive": true,
-      "map_reentry_exclusive": true,
+      "menu_portrait_exclusive": true,
+      "menu_portrait_v042": false,
+      "menu_portrait_controls": true,
+      "menu_portrait_compact": true,
+      "menu_landscape_exclusive": true,
+      "menu_portrait_repeat": true,
+      "options_portrait_exclusive": true,
+      "options_portrait_reflow": true,
+      "music_portrait_exclusive": true,
+      "credits_portrait_exclusive": true,
+      "map_portrait_exclusive": true,
+      "map_portrait_large": true,
+      "map_nodes_authored": true,
+      "map_portrait_controls": true,
+      "map_no_rotate_overlay": true,
+      "map_landscape_exclusive": true,
+      "map_landscape_large": true,
+      "map_landscape_nodes": true,
+      "map_portrait_repeat": true,
+      "reentry_exclusive": true,
       "reload_menu_exclusive": true,
       "reload_map_exclusive": true,
-      "desktop_menu_exclusive": true,
-      "desktop_menu_controls": true
+      "desktop_menu_exclusive": true
     },
     "captures": [
       "menu_portrait_1.png",
-      "menu_landscape_1.png",
+      "menu_landscape.png",
       "menu_portrait_2.png",
       "options_portrait.png",
+      "music_portrait.png",
+      "credits_portrait.png",
       "map_portrait_1.png",
-      "map_landscape_1.png",
+      "map_landscape.png",
       "map_portrait_2.png",
       "map_portrait_reentry.png",
       "menu_portrait_reload.png",
       "map_portrait_reload.png",
       "menu_desktop.png"
     ],
-    "status": "PASS",
+    "status": "FAIL",
     "menu_portrait_1": {
-      "badge": {
-        "x": 320,
-        "y": 514.8352
-      },
       "buttons": [
         {
           "h": 50,
           "inside": true,
-          "label": "JOGAR AGORA",
-          "visible": true,
           "w": 350,
           "x": 320,
-          "y": 599.808
+          "y": 574.8159999999999
         },
         {
           "h": 42,
           "inside": true,
-          "label": "MÚSICA",
-          "visible": true,
           "w": 158,
           "x": 185.6,
-          "y": 679.7824
+          "y": 654.7904
         },
         {
           "h": 42,
           "inside": true,
-          "label": "OPÇÕES",
-          "visible": true,
           "w": 158,
           "x": 454.4,
-          "y": 679.7824
+          "y": 654.7904
         },
         {
           "h": 40,
           "inside": true,
-          "label": "CRÉDITOS",
-          "visible": true,
           "w": 200,
           "x": 320,
-          "y": 749.76
+          "y": 724.7679999999999
         },
         {
           "h": 36,
           "inside": true,
-          "label": "⛶  TELA CHEIA",
-          "visible": true,
           "w": 118,
           "x": 571,
           "y": 28
@@ -100,174 +88,27 @@
       "hero": {
         "scale": 1.24,
         "x": 320,
-        "y": 429.2764391783182
+        "y": 429.34738919818477
       },
       "ori": "portrait",
-      "premium": true,
-      "title": {
-        "x": 320,
-        "y": 84.9728
-      },
-      "v40": {
-        "portraitPoster": true,
-        "stableResize": true
-      },
-      "v41": {
-        "chapter": true,
-        "compactCTA": true,
-        "portraitPremium": true
+      "story": false,
+      "v42": {
+        "compactFlow": true,
+        "portraitStory": true
       },
       "w": 640
     },
-    "menu_landscape_1": {
-      "badge": {
-        "x": 898.2709677419356,
-        "y": 311.4
-      },
-      "buttons": [
-        {
-          "h": 46,
-          "inside": true,
-          "label": "JOGAR AGORA",
-          "visible": true,
-          "w": 320,
-          "x": 354.5806451612903,
-          "y": 176.4
-        },
-        {
-          "h": 36,
-          "inside": true,
-          "label": "MÚSICA",
-          "visible": true,
-          "w": 150,
-          "x": 270.5806451612903,
-          "y": 216
-        },
-        {
-          "h": 36,
-          "inside": true,
-          "label": "OPÇÕES",
-          "visible": true,
-          "w": 150,
-          "x": 438.5806451612903,
-          "y": 216
-        },
-        {
-          "h": 34,
-          "inside": true,
-          "label": "CRÉDITOS",
-          "visible": true,
-          "w": 160,
-          "x": 354.5806451612903,
-          "y": 248.39999999999998
-        },
-        {
-          "h": 32,
-          "inside": true,
-          "label": "⛶  TELA CHEIA",
-          "visible": true,
-          "w": 150,
-          "x": 1096.9354838709678,
-          "y": 26
-        }
-      ],
-      "h": 360,
-      "hero": {
-        "scale": 1.06,
-        "x": 898.2709677419356,
-        "y": 272.7509563576723
-      },
-      "ori": "landscape",
-      "premium": true,
-      "title": {
-        "x": 354.5806451612903,
-        "y": 46.800000000000004
-      },
-      "v40": {
-        "portraitPoster": false,
-        "stableResize": true
-      },
-      "v41": {
-        "chapter": true,
-        "compactCTA": true,
-        "portraitPremium": true
-      },
-      "w": 1181.9354838709678
-    },
-    "menu_portrait_2": {
-      "badge": {
-        "x": 320,
-        "y": 514.8352
-      },
-      "buttons": [
-        {
-          "h": 50,
-          "inside": true,
-          "label": "JOGAR AGORA",
-          "visible": true,
-          "w": 350,
-          "x": 320,
-          "y": 599.808
-        },
-        {
-          "h": 42,
-          "inside": true,
-          "label": "MÚSICA",
-          "visible": true,
-          "w": 158,
-          "x": 185.6,
-          "y": 679.7824
-        },
-        {
-          "h": 42,
-          "inside": true,
-          "label": "OPÇÕES",
-          "visible": true,
-          "w": 158,
-          "x": 454.4,
-          "y": 679.7824
-        },
-        {
-          "h": 40,
-          "inside": true,
-          "label": "CRÉDITOS",
-          "visible": true,
-          "w": 200,
-          "x": 320,
-          "y": 749.76
-        },
-        {
-          "h": 36,
-          "inside": true,
-          "label": "⛶  TELA CHEIA",
-          "visible": true,
-          "w": 118,
-          "x": 571,
-          "y": 28
-        }
-      ],
+    "options": {
+      "back": true,
+      "exclusive": true,
       "h": 999.68,
-      "hero": {
-        "scale": 1.24,
-        "x": 320,
-        "y": 428.34226695269047
-      },
-      "ori": "portrait",
-      "premium": true,
-      "title": {
-        "x": 320,
-        "y": 84.9728
-      },
-      "v40": {
-        "portraitPoster": true,
-        "stableResize": true
-      },
-      "v41": {
-        "chapter": true,
-        "compactCTA": true,
-        "portraitPremium": true
-      },
-      "w": 640
+      "max": 624.8,
+      "min": 164.9472,
+      "noteY": 624.8,
+      "span": 459.85279999999995,
+      "v42": {
+        "portraitReflow": true
+      }
     },
     "map_portrait_1": {
       "buttons": [
@@ -335,10 +176,40 @@
         "x": 320,
         "y": 344.8896
       },
-      "nodeState": "DISPONÍVEL",
-      "nodeTitle": "TRILHA DO DESPERTAR",
+      "nodes": [
+        {
+          "inside": true,
+          "n": "L01",
+          "x": 330.2719412844037,
+          "y": 489.8432
+        },
+        {
+          "inside": true,
+          "n": "L02",
+          "x": 438.1273247706422,
+          "y": 384.87679999999995
+        },
+        {
+          "inside": true,
+          "n": "L03",
+          "x": 268.64029357798165,
+          "y": 339.89119999999997
+        },
+        {
+          "inside": true,
+          "n": "SECRET",
+          "x": 468.94314862385323,
+          "y": 454.85439999999994
+        },
+        {
+          "inside": true,
+          "n": "BOSS",
+          "x": 330.2719412844037,
+          "y": 229.9264
+        }
+      ],
       "ori": "portrait",
-      "selected": "L01",
+      "route": true,
       "texts": [
         "⛶  TELA CHEIA",
         "ANTERIOR",
@@ -349,270 +220,12 @@
         "DISPONÍVEL",
         "TOQUE NOS MARCADORES OU USE OS BOTÕES"
       ],
-      "v40": {
-        "mapFocus": true,
-        "stableResize": true
-      },
-      "v41": {
-        "mapHeaderPolish": true
+      "v42": {
+        "authoredNodes": true,
+        "route": true
       },
       "w": 640
     },
-    "map_landscape_1": {
-      "buttons": [
-        {
-          "h": 44,
-          "inside": true,
-          "label": "ANTERIOR",
-          "visible": true,
-          "w": 118,
-          "x": 518.7870967741935,
-          "y": 318
-        },
-        {
-          "h": 48,
-          "inside": true,
-          "label": "JOGAR FASE",
-          "visible": true,
-          "w": 200,
-          "x": 759.9677419354839,
-          "y": 318
-        },
-        {
-          "h": 44,
-          "inside": true,
-          "label": "PRÓXIMA",
-          "visible": true,
-          "w": 118,
-          "x": 1001.1483870967743,
-          "y": 318
-        },
-        {
-          "h": 36,
-          "inside": true,
-          "label": "MUNDO ◀",
-          "visible": false,
-          "w": 118,
-          "x": 115,
-          "y": 330
-        },
-        {
-          "h": 36,
-          "inside": true,
-          "label": "MUNDO ▶",
-          "visible": false,
-          "w": 118,
-          "x": 247,
-          "y": 330
-        },
-        {
-          "h": 32,
-          "inside": true,
-          "label": "⛶  TELA CHEIA",
-          "visible": true,
-          "w": 150,
-          "x": 1096.9354838709678,
-          "y": 26
-        }
-      ],
-      "h": 360,
-      "map": {
-        "alpha": 1,
-        "h": 313.2,
-        "visible": true,
-        "w": 321.82018348623853,
-        "x": 777.5651612903226,
-        "y": 154.8
-      },
-      "nodeState": "DISPONÍVEL",
-      "nodeTitle": "TRILHA DO DESPERTAR",
-      "ori": "landscape",
-      "selected": "L01",
-      "texts": [
-        "⛶  TELA CHEIA",
-        "ANTERIOR",
-        "JOGAR FASE",
-        "PRÓXIMA",
-        "PLANÍCIES VERDES",
-        "CAPÍTULO 1  •  O DESPERTAR",
-        "Uma trilha viva entre raízes,\nruínas e segredos da floresta.",
-        "TRILHA DO DESPERTAR",
-        "DISPONÍVEL",
-        "TOQUE NOS MARCADORES  •  JOGAR PARA ENTRAR"
-      ],
-      "v40": {
-        "mapFocus": true,
-        "stableResize": true
-      },
-      "v41": {
-        "mapHeaderPolish": true
-      },
-      "w": 1181.9354838709678
-    },
-    "map_portrait_2": {
-      "buttons": [
-        {
-          "h": 46,
-          "inside": true,
-          "label": "ANTERIOR",
-          "visible": true,
-          "w": 106,
-          "x": 108.80000000000001,
-          "y": 789.7472
-        },
-        {
-          "h": 50,
-          "inside": true,
-          "label": "JOGAR FASE",
-          "visible": true,
-          "w": 178,
-          "x": 320,
-          "y": 789.7472
-        },
-        {
-          "h": 46,
-          "inside": true,
-          "label": "PRÓXIMA",
-          "visible": true,
-          "w": 106,
-          "x": 531.1999999999999,
-          "y": 789.7472
-        },
-        {
-          "h": 38,
-          "inside": true,
-          "label": "MUNDO ◀",
-          "visible": false,
-          "w": 120,
-          "x": 192,
-          "y": 859.7248
-        },
-        {
-          "h": 38,
-          "inside": true,
-          "label": "MUNDO ▶",
-          "visible": false,
-          "w": 120,
-          "x": 448,
-          "y": 859.7248
-        },
-        {
-          "h": 36,
-          "inside": true,
-          "label": "⛶  TELA CHEIA",
-          "visible": true,
-          "w": 118,
-          "x": 571,
-          "y": 28
-        }
-      ],
-      "h": 999.68,
-      "map": {
-        "alpha": 1,
-        "h": 499.84,
-        "visible": true,
-        "w": 513.5970642201835,
-        "x": 320,
-        "y": 344.8896
-      },
-      "nodeState": "DISPONÍVEL",
-      "nodeTitle": "TRILHA DO DESPERTAR",
-      "ori": "portrait",
-      "selected": "L01",
-      "texts": [
-        "⛶  TELA CHEIA",
-        "ANTERIOR",
-        "JOGAR FASE",
-        "PRÓXIMA",
-        "MUNDO 01  •  PLANÍCIES VERDES",
-        "TRILHA DO DESPERTAR",
-        "DISPONÍVEL",
-        "TOQUE NOS MARCADORES OU USE OS BOTÕES"
-      ],
-      "v40": {
-        "mapFocus": true,
-        "stableResize": true
-      },
-      "v41": {
-        "mapHeaderPolish": true
-      },
-      "w": 640
-    },
-    "menu_desktop": {
-      "badge": {
-        "x": 770.1333333333333,
-        "y": 311.4
-      },
-      "buttons": [
-        {
-          "h": 46,
-          "inside": true,
-          "label": "JOGAR AGORA",
-          "visible": true,
-          "w": 304,
-          "x": 304,
-          "y": 176.4
-        },
-        {
-          "h": 36,
-          "inside": true,
-          "label": "MÚSICA",
-          "visible": true,
-          "w": 150,
-          "x": 220,
-          "y": 216
-        },
-        {
-          "h": 36,
-          "inside": true,
-          "label": "OPÇÕES",
-          "visible": true,
-          "w": 150,
-          "x": 388,
-          "y": 216
-        },
-        {
-          "h": 34,
-          "inside": true,
-          "label": "CRÉDITOS",
-          "visible": true,
-          "w": 160,
-          "x": 304,
-          "y": 248.39999999999998
-        },
-        {
-          "h": 32,
-          "inside": true,
-          "label": "⛶  TELA CHEIA",
-          "visible": true,
-          "w": 150,
-          "x": 928.3333333333334,
-          "y": 26
-        }
-      ],
-      "h": 360,
-      "hero": {
-        "scale": 1.06,
-        "x": 770.1333333333333,
-        "y": 272.45087071749185
-      },
-      "ori": "landscape",
-      "premium": true,
-      "title": {
-        "x": 304,
-        "y": 46.800000000000004
-      },
-      "v40": {
-        "portraitPoster": false,
-        "stableResize": true
-      },
-      "v41": {
-        "chapter": true,
-        "compactCTA": true,
-        "portraitPremium": true
-      },
-      "w": 1013.3333333333334
-    },
-    "technical_score": 10.0
+    "technical_score": 9.57
   }
 }
