@@ -12,15 +12,17 @@ if(Menu){
     // v034 sun/glow was visually too large and read as an unfinished circular artifact.
     for(const o of this.children?.list||[]){
       if(o?.depth===-88&&(o.type==='Ellipse'||o.type==='Arc')){
-        o.setAlpha(.025).setPosition(w*.79,h*.285);
+        this.tweens?.killTweensOf?.(o);
+        o.setScale(1).setAlpha(.025).setPosition(w*.79,h*.285);
         if(o.setDisplaySize)o.setDisplaySize(150,66);
       }
       if(o?.depth===-60&&o.type==='Ellipse'){
-        o.setAlpha(.025);
+        this.tweens?.killTweensOf?.(o);
+        o.setScale(1).setAlpha(.025);
         if(o.setDisplaySize)o.setDisplaySize(250,76);
       }
     }
-    this.__v035={menuArtifactCleanup:true};
+    this.__v035={menuArtifactCleanup:true,legacyGlowTweenRemoved:true};
     return r;
   };
 }
