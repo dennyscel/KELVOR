@@ -20,6 +20,7 @@ on:
       - 'patches/97-campaign-autoplay-midroute-slime8-preclear-rc39-v027.js'
       - 'patches/98-campaign-autoplay-ancient-crossing-route-rc39-v028.js'
       - 'patches/99-campaign-autoplay-guardian-bee-preclear-rc39-v029.js'
+      - 'patches/100-campaign-autoplay-ancient-crossing-stable-rc39-v030.js'
       - '.github/workflows/diagnose-post-spirit-window.yml'
   workflow_dispatch:
 
@@ -66,12 +67,12 @@ jobs:
           $root=Get-ChildItem -Path $dst -Directory|Where-Object{$_.Name -eq 'KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905'}|Select-Object -First 1
           if(-not $root){throw 'Candidate root missing'}
           "CAMPAIGN_ROOT=$($root.FullName)"|Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      - name: Apply current input-only patches through v029
+      - name: Apply current input-only patches through v030
         shell: pwsh
         run: |
           $runtimeDir="$env:CAMPAIGN_ROOT\web\release_v81_campaign_presentation_rc39_v004_20260905\src\runtime\v82"
           New-Item -ItemType Directory -Force -Path $runtimeDir|Out-Null
-          $files=@('75-campaign-autoplay-stability-rc39-v005.js','76-campaign-autoplay-stability-rc39-v006.js','79-campaign-autoplay-stability-rc39-v009.js','81-campaign-autoplay-stability-rc39-v011.js','83-campaign-autoplay-safe-route-rc39-v013.js','88-campaign-autoplay-platform-flow-rc39-v018.js','90-campaign-autoplay-platform-timing-rc39-v020.js','91-campaign-autoplay-seal1-authored-route-rc39-v021.js','92-campaign-autoplay-seal1-edge-carry-rc39-v022.js','93-campaign-autoplay-seal1-measured-stage2-rc39-v023.js','94-campaign-autoplay-seal2-preclear-rc39-v024.js','95-campaign-autoplay-seal2-measured-entry-rc39-v025.js','96-campaign-autoplay-post-dawn-bee7-preclear-rc39-v026.js','97-campaign-autoplay-midroute-slime8-preclear-rc39-v027.js','98-campaign-autoplay-ancient-crossing-route-rc39-v028.js','99-campaign-autoplay-guardian-bee-preclear-rc39-v029.js')
+          $files=@('75-campaign-autoplay-stability-rc39-v005.js','76-campaign-autoplay-stability-rc39-v006.js','79-campaign-autoplay-stability-rc39-v009.js','81-campaign-autoplay-stability-rc39-v011.js','83-campaign-autoplay-safe-route-rc39-v013.js','88-campaign-autoplay-platform-flow-rc39-v018.js','90-campaign-autoplay-platform-timing-rc39-v020.js','91-campaign-autoplay-seal1-authored-route-rc39-v021.js','92-campaign-autoplay-seal1-edge-carry-rc39-v022.js','93-campaign-autoplay-seal1-measured-stage2-rc39-v023.js','94-campaign-autoplay-seal2-preclear-rc39-v024.js','95-campaign-autoplay-seal2-measured-entry-rc39-v025.js','96-campaign-autoplay-post-dawn-bee7-preclear-rc39-v026.js','97-campaign-autoplay-midroute-slime8-preclear-rc39-v027.js','98-campaign-autoplay-ancient-crossing-route-rc39-v028.js','99-campaign-autoplay-guardian-bee-preclear-rc39-v029.js','100-campaign-autoplay-ancient-crossing-stable-rc39-v030.js')
           foreach($f in $files){Copy-Item "$env:GITHUB_WORKSPACE\patches\$f" "$runtimeDir\$f" -Force}
           $index="$env:CAMPAIGN_ROOT\web\index.html"
           $text=Get-Content -LiteralPath $index -Raw
