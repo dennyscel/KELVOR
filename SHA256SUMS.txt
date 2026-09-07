@@ -1,7 +1,7 @@
 16ebe0a1b6ba8b2fe8dfea335da3b6cdd4be242b86364bcff38fba1b1a499af3  .github/workflows/bootstrap-selftest.yml
 8134c7af1470f35315081df47abb3bcd786d0b0d692f934bf1f160179837517e  .github/workflows/campaign-rc39-v003-windows.yml
 759b2e2b66533fa23e53b88c431dbad7a80c0e3a05448657820e1cebef70ceb5  .github/workflows/campaign-rc39-v004-windows.yml
-db41070254b4f0a6ef94a884d1cd8c1bdbdc340fafa069f84d7a766ea3be3a0d  .github/workflows/diagnose-post-spirit-window.yml
+309adf61e526fb07cf9338679c47ea7fd26cc6cb5cfb4c0f5b69131c4c2922da  .github/workflows/diagnose-post-spirit-window.yml
 74231a08275734d02d176310604bc6bf3aed345281291221909f8733ebf4fbb2  .github/workflows/diagnose-rc39-v004.yml
 f52a56ab8a108cab4a8d506f68e5a695861e69f1a1d925c5b5f457a32259f034  .github/workflows/diagnose-seal1-targeted.yml
 bad87fdac9be82e03335360cdb983969bd36ff2fcc7e89862bbf6ab0f81f8bfa  .github/workflows/diagnose-seal3-targeted.yml
