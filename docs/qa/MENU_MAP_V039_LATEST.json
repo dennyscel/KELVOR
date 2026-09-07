@@ -1,9 +1,9 @@
 {
-  "gate": "MENU_MAP_V039",
-  "run_id": "34098845104",
-  "run_number": "3",
-  "head_sha": "db241ec8a3c2e8e221cde277fd72a01660017675",
-  "smoke_outcome": "failure",
+  "gate": "MENU_MAP_V039_V040",
+  "run_id": "34099469906",
+  "run_number": "4",
+  "head_sha": "b8be8eafee3376a94053be54c7ea523efc2ac05e",
+  "smoke_outcome": "success",
   "result": {
     "checks": {
       "menu_portrait_buttons_inside": true,
@@ -13,16 +13,16 @@
       "menu_landscape_balanced": true,
       "menu_repeat_stable": true,
       "options_touch_back_preserved": true,
-      "map_portrait_island_large": false,
+      "map_portrait_island_large": true,
       "map_portrait_controls_inside": true,
       "map_portrait_play_touch": true,
       "map_no_rotate_overlay": true,
       "map_text_present": true,
-      "map_landscape_island_large": false,
+      "map_landscape_island_large": true,
       "map_landscape_controls_inside": true,
       "map_repeat_stable": true,
-      "map_reentry_not_blank": false,
-      "reload_map_not_blank": false,
+      "map_reentry_not_blank": true,
+      "reload_map_not_blank": true,
       "desktop_menu_inside": true
     },
     "captures": [
@@ -37,7 +37,7 @@
       "map_portrait_reload.png",
       "menu_desktop.png"
     ],
-    "status": "FAIL",
+    "status": "PASS",
     "menu_portrait_1": {
       "badge": {
         "visible": true,
@@ -95,7 +95,7 @@
       "hero": {
         "visible": true,
         "x": 320,
-        "y": 489.08292971088594
+        "y": 489.17671651050495
       },
       "ori": "portrait",
       "texts": [
@@ -174,7 +174,7 @@
       "hero": {
         "visible": true,
         "x": 898.2709677419356,
-        "y": 272.8860818935207
+        "y": 272.9142848634329
       },
       "ori": "landscape",
       "texts": [
@@ -254,7 +254,7 @@
       "hero": {
         "visible": true,
         "x": 320,
-        "y": 488.4613703935674
+        "y": 488.5166612871599
       },
       "ori": "portrait",
       "texts": [
@@ -336,11 +336,11 @@
       "h": 999.68,
       "map": {
         "alpha": 1,
-        "h": 409.86879999999996,
+        "h": 499.84,
         "visible": true,
-        "w": 421.1495926605504,
+        "w": 513.5970642201835,
         "x": 320,
-        "y": 369.8816
+        "y": 344.8896
       },
       "nodeState": "DISPONÍVEL",
       "nodeTitle": "TRILHA DO DESPERTAR",
@@ -418,11 +418,11 @@
       "h": 360,
       "map": {
         "alpha": 1,
-        "h": 266.4,
+        "h": 313.2,
         "visible": true,
-        "w": 273.7321100917431,
-        "x": 759.9677419354839,
-        "y": 165.6
+        "w": 321.82018348623853,
+        "x": 777.5651612903226,
+        "y": 154.8
       },
       "nodeState": "DISPONÍVEL",
       "nodeTitle": "TRILHA DO DESPERTAR",
@@ -502,11 +502,11 @@
       "h": 999.68,
       "map": {
         "alpha": 1,
-        "h": 409.86879999999996,
+        "h": 499.84,
         "visible": true,
-        "w": 421.1495926605504,
+        "w": 513.5970642201835,
         "x": 320,
-        "y": 369.8816
+        "y": 344.8896
       },
       "nodeState": "DISPONÍVEL",
       "nodeTitle": "TRILHA DO DESPERTAR",
@@ -584,11 +584,11 @@
       "h": 360,
       "map": {
         "alpha": 1,
-        "h": 266.4,
+        "h": 313.2,
         "visible": true,
-        "w": 273.7321100917431,
-        "x": 759.9677419354839,
-        "y": 165.6
+        "w": 321.82018348623853,
+        "x": 777.5651612903226,
+        "y": 154.8
       },
       "nodeState": "DISPONÍVEL",
       "nodeTitle": "TRILHA DO DESPERTAR",
@@ -668,11 +668,11 @@
       "h": 999.68,
       "map": {
         "alpha": 1,
-        "h": 409.86879999999996,
+        "h": 499.84,
         "visible": true,
-        "w": 421.1495926605504,
+        "w": 513.5970642201835,
         "x": 320,
-        "y": 369.8816
+        "y": 344.8896
       },
       "nodeState": "DISPONÍVEL",
       "nodeTitle": "TRILHA DO DESPERTAR",
@@ -747,7 +747,7 @@
       "hero": {
         "visible": true,
         "x": 770.1333333333333,
-        "y": 272.6922683594633
+        "y": 272.6609460642803
       },
       "ori": "landscape",
       "texts": [
@@ -770,6 +770,6 @@
       },
       "w": 1013.3333333333334
     },
-    "technical_score": 7.78
+    "technical_score": 10.0
   }
 }
