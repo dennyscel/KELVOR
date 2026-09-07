@@ -1,0 +1,93 @@
+name: KELVOR RC39 W01-L01 Final Visual v038
+
+on:
+  push:
+    paths:
+      - 'patches/108-w01-l01-art-finish-v038.js'
+      - 'scripts/verify_w01_l01_v038.py'
+      - '.github/workflows/verify-w01-l01-v038.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: windows-latest
+    timeout-minutes: 12
+    env:
+      RELEASE_ID: '383144921'
+      EXPECTED_ASSET: KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905.zip
+      EXPECTED_SHA256: 77e50fde0ac6fc392237616d2842814a92a6d6d392a54487b38321c339b2d36e
+      PATCH31: 101-owner-mobile-visual-feedback-rc39-v031.js
+      PATCH32: 102-owner-experience-rc39-v032.js
+      PATCH33: 103-owner-experience-gate-hotfix-rc39-v033.js
+      PATCH34: 104-menu-map-polish-rc39-v034.js
+      PATCH35: 105-menu-map-polish-rc39-v035.js
+      PATCH36: 106-w01-l01-visual-interaction-rebuild-v036.js
+      PATCH37: 107-w01-l01-art-direction-v037.js
+      PATCH38: 108-w01-l01-art-finish-v038.js
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prepare result directory
+        shell: pwsh
+        run: |
+          $out="$env:RUNNER_TEMP\w01-l01-v038-result"
+          New-Item -ItemType Directory -Force -Path $out|Out-Null
+          "RESULT_DIR=$out"|Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Locate Google Chrome
+        shell: pwsh
+        run: |
+          $candidates=@('C:\Program Files\Google\Chrome\Application\chrome.exe','C:\Program Files (x86)\Google\Chrome\Application\chrome.exe')
+          $chrome=$candidates|Where-Object{Test-Path $_}|Select-Object -First 1
+          if(-not $chrome){$cmd=Get-Command chrome.exe -ErrorAction SilentlyContinue;if($cmd){$chrome=$cmd.Source}}
+          if(-not $chrome){throw 'Google Chrome not found'}
+          "CHROME_PATH=$chrome"|Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Download and verify immutable RC39 v004 candidate
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $release=(gh api "/repos/$env:GITHUB_REPOSITORY/releases/$env:RELEASE_ID"|ConvertFrom-Json)
+          $asset=$release.assets|Where-Object{$_.name -eq $env:EXPECTED_ASSET}|Select-Object -First 1
+          if(-not $asset){throw 'Required release asset missing'}
+          $out="$env:RUNNER_TEMP\$env:EXPECTED_ASSET"
+          curl.exe --fail --location --silent --show-error -H "Authorization: Bearer $env:GH_TOKEN" -H "Accept: application/octet-stream" -H "X-GitHub-Api-Version: 2022-11-28" "https://api.github.com/repos/$env:GITHUB_REPOSITORY/releases/assets/$($asset.id)" --output "$out"
+          if($LASTEXITCODE -ne 0){throw 'Release asset download failed'}
+          $got=(Get-FileHash -LiteralPath $out -Algorithm SHA256).Hash.ToLowerInvariant()
+          if($got -ne $env:EXPECTED_SHA256){throw "SHA mismatch $got"}
+          $dst="$env:RUNNER_TEMP\w01-l01-v038"
+          New-Item -ItemType Directory -Force -Path $dst|Out-Null
+          Expand-Archive -LiteralPath $out -DestinationPath $dst -Force
+          $root=Get-ChildItem -Path $dst -Directory|Where-Object{$_.Name -eq 'KELVOR_RC39_CAMPAIGN_PRESENTATION_INTEGRATION_CANDIDATE_v004_20260905'}|Select-Object -First 1
+          if(-not $root){throw 'Candidate root missing'}
+          "WEB_ROOT=$($root.FullName)\web"|Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Inject promoted chain plus v036-v038 candidates
+        shell: pwsh
+        run: |
+          $rel="$env:WEB_ROOT\release_v81_campaign_presentation_rc39_v004_20260905"
+          $runtime="$rel\src\runtime\v82"
+          New-Item -ItemType Directory -Force -Path $runtime|Out-Null
+          $patches=@($env:PATCH31,$env:PATCH32,$env:PATCH33,$env:PATCH34,$env:PATCH35,$env:PATCH36,$env:PATCH37,$env:PATCH38)
+          foreach($p in $patches){Copy-Item "$env:GITHUB_WORKSPACE\patches\$p" "$runtime\$p" -Force}
+          $index="$env:WEB_ROOT\index.html"
+          $text=Get-Content -LiteralPath $index -Raw
+          foreach($p in $patches){$tag='<script src="./src/runtime/v82/'+$p+'"></script>';if(-not $text.Contains($tag)){$text=$text.Replace('</body>',$tag+"`r`n</body>")}}
+          Set-Content -LiteralPath $index -Value $text -Encoding utf8
+          foreach($p in $patches){if(-not (Select-String -LiteralPath $index -SimpleMatch $p)){throw "patch tag missing $p"}}
+      - name: Install Selenium
+        run: python -m pip install --disable-pip-version-check --quiet selenium
+      - name: Run W01-L01 v038 technical + visual smoke
+        shell: pwsh
+        run: python scripts/verify_w01_l01_v038.py --web "$env:WEB_ROOT" --chrome "$env:CHROME_PATH" --out "$env:RESULT_DIR"
+      - name: Upload W01-L01 v038 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: KELVOR-RC39-W01-L01-V038-${{ github.run_number }}
+          path: ${{ env.RESULT_DIR }}/**
+          if-no-files-found: error
+          retention-days: 30
