@@ -11,7 +11,7 @@ a725121ff52e342ea3b06ad7b5f63ffac0ead596fd570e27725ad14ca1404e1f  .github/workfl
 2d28bff21ac47dc27d5bc9ab445a44e1eabd7385b2648565cc84c516957749f2  .github/workflows/probe-rc39-release-sources.yml
 5eb0c55638ceb3dd6775b861c0e8f67cb6e1599698e5323b19fe8831d8817f30  .github/workflows/qa84-windows.yml
 0c37f41cbf33d242a9b09975eaca0aadd41a0bd39c0a9ce371f0ae2133f310a4  .github/workflows/repo-checksum-sync.yml
-884aea95c7ee7ae4a36434ee45f3e00dd7a92e629b09555d5494c6985f719a6f  .github/workflows/repo-snapshot.yml
+f2eb983644eaa1182110b9212a3207495fe96e6cad1ae3a62800cd887d3a55cb  .github/workflows/repo-snapshot.yml
 49e4ff64ae22f0cf8ff456e944f07700e080fdac4d854aecdb72417adba7ab1b  .github/workflows/verify-menu-map-v034.yml
 75b10fca627786e0bc51862afc7f73fa51189b0526389ffdcf22dd869c4c836d  .github/workflows/verify-menu-map-v035.yml
 2535db0f18316fda799264a9e39dceea183e50a13147412925ada0778c1bd5b6  .github/workflows/verify-menu-map-v039.yml
