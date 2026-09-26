@@ -1,0 +1,20 @@
+name: Genesis Final Release
+on:
+  push:
+    branches: [chatgpt-genesis-francisca-public]
+    paths:
+      - '.github/workflows/chatgpt-genesis-final-release.yml'
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish final deliverables
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="genesis-criacao-francisca-v1"
+          gh release delete "$tag" --cleanup-tag -y || true
+          gh release create "$tag"             chatgpt_genesis/final/genesis_criacao_projeto_completo.zip             chatgpt_genesis/final/genesis_criacao_10min_francisca.html             chatgpt_genesis/final/genesis_criacao_10min_francisca.mp4             --title "Gênesis — A Criação · Francisca Neural"             --notes "Versão final: projeto completo, HTML autônomo com pt-BR-FranciscaNeural incorporada e MP4 de 10 minutos para YouTube."
