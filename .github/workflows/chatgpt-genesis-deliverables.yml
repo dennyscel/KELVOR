@@ -1,0 +1,27 @@
+name: Genesis Final Deliverables
+on:
+  push:
+    branches: [chatgpt-genesis-francisca-public]
+    paths:
+      - 'chatgpt_genesis/make_deliverables.py'
+      - '.github/workflows/chatgpt-genesis-deliverables.yml'
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build deliverables
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+          python chatgpt_genesis/make_deliverables.py
+      - name: Commit deliverables
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add chatgpt_genesis/final/genesis_criacao_10min_francisca.html chatgpt_genesis/final/genesis_criacao_10min_francisca.mp4 chatgpt_genesis/final/genesis_criacao_projeto_completo.zip chatgpt_genesis/src chatgpt_genesis/LEIA-ME-GENESIS.txt
+          git commit -m "deliver: Genesis HTML MP4 ZIP with Francisca Neural" || exit 0
+          git push
