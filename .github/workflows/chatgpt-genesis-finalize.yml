@@ -1,0 +1,35 @@
+name: Finalize Genesis Francisca
+
+on:
+  push:
+    branches: [chatgpt-genesis-francisca-public]
+    paths:
+      - 'chatgpt_genesis/finalize.py'
+      - '.github/workflows/chatgpt-genesis-finalize.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Install tools
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python -m pip install pillow mutagen
+      - name: Build final HTML and MP4
+        run: python chatgpt_genesis/finalize.py
+      - name: Commit final outputs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add chatgpt_genesis/final
+          git commit -m "build: Genesis HTML with Francisca and MP4" || exit 0
+          git push
