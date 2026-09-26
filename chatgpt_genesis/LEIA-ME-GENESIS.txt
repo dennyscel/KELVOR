@@ -1,0 +1,8 @@
+GÊNESIS — A CRIAÇÃO
+
+Saídas:
+- genesis_criacao_10min_francisca.html: arquivo autônomo com Francisca Neural incorporada.
+- genesis_criacao_10min_francisca.mp4: vídeo de 10 minutos para YouTube.
+
+Voz: pt-BR-FranciscaNeural, gerada via edge-tts no GitHub Actions.
+A representação visual não mostra a Terra como globo; usa horizonte, águas, firmamento, terra seca e paisagens.
