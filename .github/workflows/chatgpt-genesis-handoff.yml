@@ -1,0 +1,22 @@
+name: Genesis Handoff Artifact
+on:
+  push:
+    branches: [chatgpt-genesis-francisca-public]
+    paths:
+      - '.github/workflows/chatgpt-genesis-handoff.yml'
+permissions:
+  contents: read
+jobs:
+  handoff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: genesis-final-deliverables
+          path: |
+            chatgpt_genesis/final/genesis_criacao_10min_francisca.html
+            chatgpt_genesis/final/genesis_criacao_10min_francisca.mp4
+            chatgpt_genesis/final/genesis_criacao_projeto_completo.zip
+          compression-level: 0
+          retention-days: 1
