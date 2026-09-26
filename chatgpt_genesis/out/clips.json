@@ -1,0 +1,586 @@
+{
+  "voice": "pt-BR-FranciscaNeural",
+  "base_rate": 0.95,
+  "clips": [
+    {
+      "file": "fala_001.mp3",
+      "dur": 6.432,
+      "text": "No princípio, antes do tempo, antes da primeira manhã, havia somente Deus."
+    },
+    {
+      "file": "fala_002.mp3",
+      "dur": 4.056,
+      "text": "E no princípio, Deus criou os céus e a terra."
+    },
+    {
+      "file": "fala_003.mp3",
+      "dur": 3.432,
+      "text": "A terra, porém, era sem forma e vazia."
+    },
+    {
+      "file": "fala_004.mp3",
+      "dur": 5.544,
+      "text": "Trevas cobriam a face do abismo. Não havia som, nem cor, nem vida."
+    },
+    {
+      "file": "fala_005.mp3",
+      "dur": 4.392,
+      "text": "Mas o Espírito de Deus se movia sobre a face das águas."
+    },
+    {
+      "file": "fala_006.mp3",
+      "dur": 5.976,
+      "text": "Como um sopro suave, pairando sobre o silêncio, esperando o momento da palavra."
+    },
+    {
+      "file": "fala_007.mp3",
+      "dur": 2.448,
+      "text": "Então Deus falou."
+    },
+    {
+      "file": "fala_008.mp3",
+      "dur": 2.088,
+      "text": "Haja luz."
+    },
+    {
+      "file": "fala_009.mp3",
+      "dur": 2.088,
+      "text": "E houve luz."
+    },
+    {
+      "file": "fala_010.mp3",
+      "dur": 5.208,
+      "text": "A claridade rompeu as trevas, como uma aurora que jamais havia existido."
+    },
+    {
+      "file": "fala_011.mp3",
+      "dur": 2.76,
+      "text": "E Deus viu que a luz era boa."
+    },
+    {
+      "file": "fala_012.mp3",
+      "dur": 3.048,
+      "text": "Então separou a luz das trevas."
+    },
+    {
+      "file": "fala_013.mp3",
+      "dur": 4.872,
+      "text": "À luz, Deus chamou dia. E às trevas, chamou noite."
+    },
+    {
+      "file": "fala_014.mp3",
+      "dur": 3.96,
+      "text": "E houve tarde, e houve manhã: o primeiro dia."
+    },
+    {
+      "file": "fala_015.mp3",
+      "dur": 6.768,
+      "text": "E disse Deus: haja uma expansão no meio das águas, e haja separação entre águas e águas."
+    },
+    {
+      "file": "fala_016.mp3",
+      "dur": 2.544,
+      "text": "E as águas obedeceram."
+    },
+    {
+      "file": "fala_017.mp3",
+      "dur": 5.688,
+      "text": "Parte delas subiu ao alto, como um véu de vapor, e parte permaneceu embaixo."
+    },
+    {
+      "file": "fala_018.mp3",
+      "dur": 5.136,
+      "text": "Entre elas, Deus estendeu o firmamento, como uma abóbada sobre o mundo."
+    },
+    {
+      "file": "fala_019.mp3",
+      "dur": 3.384,
+      "text": "E ao firmamento, Deus chamou céus."
+    },
+    {
+      "file": "fala_020.mp3",
+      "dur": 6.288,
+      "text": "Nuvens se formaram, o vento soprou pela primeira vez, e o horizonte ganhou profundidade."
+    },
+    {
+      "file": "fala_021.mp3",
+      "dur": 4.008,
+      "text": "E houve tarde, e houve manhã: o segundo dia."
+    },
+    {
+      "file": "fala_022.mp3",
+      "dur": 6.792,
+      "text": "Disse Deus: ajuntem-se as águas debaixo dos céus num só lugar, e apareça a porção seca."
+    },
+    {
+      "file": "fala_023.mp3",
+      "dur": 2.088,
+      "text": "E assim foi."
+    },
+    {
+      "file": "fala_024.mp3",
+      "dur": 3.48,
+      "text": "Do fundo das águas, a rocha se levantou."
+    },
+    {
+      "file": "fala_025.mp3",
+      "dur": 6.024,
+      "text": "Montanhas romperam a superfície, e a água escorreu de seus ombros em cascatas."
+    },
+    {
+      "file": "fala_026.mp3",
+      "dur": 5.112,
+      "text": "Vales se abriram, e rios começaram a encontrar o seu caminho até o mar."
+    },
+    {
+      "file": "fala_027.mp3",
+      "dur": 5.952,
+      "text": "À porção seca, Deus chamou terra. Ao ajuntamento das águas, chamou mares."
+    },
+    {
+      "file": "fala_028.mp3",
+      "dur": 2.304,
+      "text": "E Deus viu que era bom."
+    },
+    {
+      "file": "fala_029.mp3",
+      "dur": 6.6,
+      "text": "Então disse Deus: produza a terra relva, ervas que deem semente e árvores que deem fruto."
+    },
+    {
+      "file": "fala_030.mp3",
+      "dur": 2.304,
+      "text": "E o chão nu respondeu."
+    },
+    {
+      "file": "fala_031.mp3",
+      "dur": 5.424,
+      "text": "Brotos romperam a terra, e o verde se espalhou pelas colinas como uma onda."
+    },
+    {
+      "file": "fala_032.mp3",
+      "dur": 4.968,
+      "text": "Troncos subiram, galhos se abriram, e as folhas se voltaram para a luz."
+    },
+    {
+      "file": "fala_033.mp3",
+      "dur": 4.584,
+      "text": "Flores desabrocharam em cores que ninguém jamais havia visto."
+    },
+    {
+      "file": "fala_034.mp3",
+      "dur": 5.928,
+      "text": "Frutos pesaram nos galhos, cada um trazendo em si a semente da próxima árvore."
+    },
+    {
+      "file": "fala_035.mp3",
+      "dur": 5.688,
+      "text": "E Deus viu que era bom. E houve tarde, e houve manhã: o terceiro dia."
+    },
+    {
+      "file": "fala_036.mp3",
+      "dur": 7.224,
+      "text": "Disse Deus: haja luminares no firmamento dos céus, para fazer separação entre o dia e a noite."
+    },
+    {
+      "file": "fala_037.mp3",
+      "dur": 5.136,
+      "text": "Que sirvam de sinais, para marcar as estações, os dias e os anos."
+    },
+    {
+      "file": "fala_038.mp3",
+      "dur": 4.32,
+      "text": "Então o grande luminar se acendeu, para governar o dia."
+    },
+    {
+      "file": "fala_039.mp3",
+      "dur": 5.256,
+      "text": "Seu calor aqueceu a terra, e sua luz dourou os mares e as montanhas."
+    },
+    {
+      "file": "fala_040.mp3",
+      "dur": 4.032,
+      "text": "E o luminar menor foi posto para governar a noite."
+    },
+    {
+      "file": "fala_041.mp3",
+      "dur": 2.88,
+      "text": "Deus fez também as estrelas."
+    },
+    {
+      "file": "fala_042.mp3",
+      "dur": 5.52,
+      "text": "Milhares, milhões delas, espalhadas pelo firmamento como poeira de luz."
+    },
+    {
+      "file": "fala_043.mp3",
+      "dur": 4.728,
+      "text": "E o céu passou a girar como um grande relógio, contando os tempos."
+    },
+    {
+      "file": "fala_044.mp3",
+      "dur": 3.984,
+      "text": "E houve tarde, e houve manhã: o quarto dia."
+    },
+    {
+      "file": "fala_045.mp3",
+      "dur": 4.296,
+      "text": "Disse Deus: povoem-se as águas de seres viventes."
+    },
+    {
+      "file": "fala_046.mp3",
+      "dur": 3.912,
+      "text": "E o mar, que era silêncio, encheu-se de movimento."
+    },
+    {
+      "file": "fala_047.mp3",
+      "dur": 5.328,
+      "text": "Pequenos peixes surgiram aos milhares, girando em cardumes prateados."
+    },
+    {
+      "file": "fala_048.mp3",
+      "dur": 4.56,
+      "text": "Corais se abriram em cores, e algas dançaram nas correntes."
+    },
+    {
+      "file": "fala_049.mp3",
+      "dur": 3.888,
+      "text": "Tartarugas deslizaram entre os raios de luz."
+    },
+    {
+      "file": "fala_050.mp3",
+      "dur": 3.432,
+      "text": "E Deus criou os grandes animais marinhos."
+    },
+    {
+      "file": "fala_051.mp3",
+      "dur": 5.568,
+      "text": "Baleias imensas cruzaram as profundezas, e o seu canto ecoou pelo oceano."
+    },
+    {
+      "file": "fala_052.mp3",
+      "dur": 4.128,
+      "text": "Golfinhos saltaram sobre as ondas, brincando na luz."
+    },
+    {
+      "file": "fala_053.mp3",
+      "dur": 5.064,
+      "text": "E disse Deus: voem as aves sobre a terra, pela expansão dos céus."
+    },
+    {
+      "file": "fala_054.mp3",
+      "dur": 3.048,
+      "text": "Asas se abriram pela primeira vez."
+    },
+    {
+      "file": "fala_055.mp3",
+      "dur": 4.392,
+      "text": "Bandos riscaram o céu sobre praias, rios e montanhas."
+    },
+    {
+      "file": "fala_056.mp3",
+      "dur": 5.544,
+      "text": "Uma águia subiu nas correntes de ar, mais alto do que qualquer outra criatura."
+    },
+    {
+      "file": "fala_057.mp3",
+      "dur": 8.064,
+      "text": "Deus os abençoou, dizendo: frutificai e multiplicai-vos. E houve tarde, e houve manhã: o quinto dia."
+    },
+    {
+      "file": "fala_058.mp3",
+      "dur": 5.616,
+      "text": "Então disse Deus: produza a terra seres viventes, conforme a sua espécie."
+    },
+    {
+      "file": "fala_059.mp3",
+      "dur": 2.784,
+      "text": "E a terra estremeceu de vida."
+    },
+    {
+      "file": "fala_060.mp3",
+      "dur": 5.52,
+      "text": "Manadas surgiram nas planícies, e o som dos cascos ecoou pelos vales."
+    },
+    {
+      "file": "fala_061.mp3",
+      "dur": 4.8,
+      "text": "Elefantes caminharam devagar, sacudindo a poeira das costas."
+    },
+    {
+      "file": "fala_062.mp3",
+      "dur": 4.176,
+      "text": "Girafas ergueram o pescoço até a copa das árvores."
+    },
+    {
+      "file": "fala_063.mp3",
+      "dur": 5.832,
+      "text": "Coelhos correram entre as raízes, e pequenos animais encheram cada canto do campo."
+    },
+    {
+      "file": "fala_064.mp3",
+      "dur": 5.64,
+      "text": "Um leão atravessou a relva, e ao seu lado os filhotes brincavam, sem medo algum."
+    },
+    {
+      "file": "fala_065.mp3",
+      "dur": 2.304,
+      "text": "E Deus viu que era bom."
+    },
+    {
+      "file": "fala_066.mp3",
+      "dur": 6.624,
+      "text": "Então disse Deus: façamos o homem à nossa imagem, conforme a nossa semelhança."
+    },
+    {
+      "file": "fala_067.mp3",
+      "dur": 3.672,
+      "text": "E o Senhor Deus formou o homem do pó da terra."
+    },
+    {
+      "file": "fala_068.mp3",
+      "dur": 4.224,
+      "text": "O pó se ergueu, girou no ar, e começou a tomar forma."
+    },
+    {
+      "file": "fala_069.mp3",
+      "dur": 4.008,
+      "text": "Ombros, braços, mãos. Um rosto."
+    },
+    {
+      "file": "fala_070.mp3",
+      "dur": 2.928,
+      "text": "Mas ainda não havia vida."
+    },
+    {
+      "file": "fala_071.mp3",
+      "dur": 4.536,
+      "text": "Então Deus soprou em suas narinas o fôlego da vida."
+    },
+    {
+      "file": "fala_072.mp3",
+      "dur": 2.136,
+      "text": "O peito se elevou."
+    },
+    {
+      "file": "fala_073.mp3",
+      "dur": 3.144,
+      "text": "E o homem passou a ser alma vivente."
+    },
+    {
+      "file": "fala_074.mp3",
+      "dur": 4.32,
+      "text": "Ele abriu os olhos, e a primeira coisa que viu foi a luz."
+    },
+    {
+      "file": "fala_075.mp3",
+      "dur": 5.568,
+      "text": "Sentiu o vento no rosto, a terra sob as mãos, e ouviu a própria respiração."
+    },
+    {
+      "file": "fala_076.mp3",
+      "dur": 4.728,
+      "text": "Então se levantou, e contemplou um mundo inteiro preparado para ele."
+    },
+    {
+      "file": "fala_077.mp3",
+      "dur": 4.632,
+      "text": "E o Senhor Deus plantou um jardim no Éden, do lado do oriente."
+    },
+    {
+      "file": "fala_078.mp3",
+      "dur": 5.112,
+      "text": "Ali fez brotar toda árvore agradável aos olhos e boa para alimento."
+    },
+    {
+      "file": "fala_079.mp3",
+      "dur": 6.048,
+      "text": "No meio do jardim estavam a árvore da vida e a árvore do conhecimento do bem e do mal."
+    },
+    {
+      "file": "fala_080.mp3",
+      "dur": 6.072,
+      "text": "Um rio saía do Éden para regar o jardim, e dali se dividia em quatro braços."
+    },
+    {
+      "file": "fala_081.mp3",
+      "dur": 4.368,
+      "text": "Deus colocou o homem no jardim, para o cultivar e o guardar."
+    },
+    {
+      "file": "fala_082.mp3",
+      "dur": 5.04,
+      "text": "E lhe deu uma ordem: de toda árvore do jardim comerás livremente."
+    },
+    {
+      "file": "fala_083.mp3",
+      "dur": 8.136,
+      "text": "Mas da árvore do conhecimento do bem e do mal não comerás, porque no dia em que dela comeres, certamente morrerás."
+    },
+    {
+      "file": "fala_084.mp3",
+      "dur": 5.808,
+      "text": "Então Deus trouxe ao homem todos os animais do campo e todas as aves do céu,"
+    },
+    {
+      "file": "fala_085.mp3",
+      "dur": 2.76,
+      "text": "para ver como ele os chamaria."
+    },
+    {
+      "file": "fala_086.mp3",
+      "dur": 4.896,
+      "text": "Leão. Águia. Cervo. Elefante."
+    },
+    {
+      "file": "fala_087.mp3",
+      "dur": 4.968,
+      "text": "E o nome que o homem deu a cada ser vivente, esse foi o seu nome."
+    },
+    {
+      "file": "fala_088.mp3",
+      "dur": 3.96,
+      "text": "Um a um, eles passaram, e cada um tinha o seu par."
+    },
+    {
+      "file": "fala_089.mp3",
+      "dur": 4.152,
+      "text": "Mas para o homem não se achava ninguém que lhe correspondesse."
+    },
+    {
+      "file": "fala_090.mp3",
+      "dur": 4.512,
+      "text": "Ele estava cercado de vida e, ainda assim, estava só."
+    },
+    {
+      "file": "fala_091.mp3",
+      "dur": 7.704,
+      "text": "Então disse o Senhor Deus: não é bom que o homem esteja só. Farei para ele uma companheira que lhe corresponda."
+    },
+    {
+      "file": "fala_092.mp3",
+      "dur": 4.488,
+      "text": "E fez cair um sono profundo sobre o homem, e ele adormeceu."
+    },
+    {
+      "file": "fala_093.mp3",
+      "dur": 4.248,
+      "text": "Tomou uma de suas costelas e fechou a carne em seu lugar."
+    },
+    {
+      "file": "fala_094.mp3",
+      "dur": 4.032,
+      "text": "E da costela que tirou do homem, Deus formou a mulher."
+    },
+    {
+      "file": "fala_095.mp3",
+      "dur": 4.368,
+      "text": "Luz e forma se uniram, e ela respirou pela primeira vez."
+    },
+    {
+      "file": "fala_096.mp3",
+      "dur": 2.472,
+      "text": "E Deus a trouxe ao homem."
+    },
+    {
+      "file": "fala_097.mp3",
+      "dur": 3.312,
+      "text": "Adão despertou. E a viu."
+    },
+    {
+      "file": "fala_098.mp3",
+      "dur": 5.952,
+      "text": "Então disse: esta, afinal, é osso dos meus ossos e carne da minha carne."
+    },
+    {
+      "file": "fala_099.mp3",
+      "dur": 4.008,
+      "text": "Ela será chamada mulher, porque do homem foi tomada."
+    },
+    {
+      "file": "fala_100.mp3",
+      "dur": 6.384,
+      "text": "Por isso o homem deixa pai e mãe, se une à sua mulher, e os dois se tornam uma só carne."
+    },
+    {
+      "file": "fala_101.mp3",
+      "dur": 4.128,
+      "text": "Entre eles não havia medo, nem culpa, nem vergonha."
+    },
+    {
+      "file": "fala_102.mp3",
+      "dur": 5.832,
+      "text": "E Deus os abençoou, e disse: frutificai, multiplicai-vos e enchei a terra."
+    },
+    {
+      "file": "fala_103.mp3",
+      "dur": 5.04,
+      "text": "Cuidai dos peixes do mar, das aves do céu e de todo ser vivente."
+    },
+    {
+      "file": "fala_104.mp3",
+      "dur": 6.432,
+      "text": "Eis que vos tenho dado toda erva que dá semente e todo fruto das árvores para o vosso sustento."
+    },
+    {
+      "file": "fala_105.mp3",
+      "dur": 7.752,
+      "text": "E viu Deus tudo quanto tinha feito, e eis que era muito bom. E houve tarde, e houve manhã: o sexto dia."
+    },
+    {
+      "file": "fala_106.mp3",
+      "dur": 4.944,
+      "text": "Assim foram concluídos os céus e a terra, e tudo o que neles há."
+    },
+    {
+      "file": "fala_107.mp3",
+      "dur": 4.344,
+      "text": "E no sétimo dia, Deus terminou a obra que havia feito."
+    },
+    {
+      "file": "fala_108.mp3",
+      "dur": 2.256,
+      "text": "E descansou."
+    },
+    {
+      "file": "fala_109.mp3",
+      "dur": 3.984,
+      "text": "Não por cansaço, mas porque tudo estava completo."
+    },
+    {
+      "file": "fala_110.mp3",
+      "dur": 6.432,
+      "text": "O vento passou pelas árvores, os rios seguiram o seu curso, e a criação respirou em paz."
+    },
+    {
+      "file": "fala_111.mp3",
+      "dur": 4.08,
+      "text": "E Deus abençoou o sétimo dia, e o santificou."
+    },
+    {
+      "file": "fala_112.mp3",
+      "dur": 4.752,
+      "text": "Das trevas, veio a luz. Das águas, surgiu a terra."
+    },
+    {
+      "file": "fala_113.mp3",
+      "dur": 5.448,
+      "text": "Da terra brotou a vida. E da vida, o homem, feito à imagem de Deus."
+    },
+    {
+      "file": "fala_114.mp3",
+      "dur": 5.304,
+      "text": "Nada foi por acaso. Tudo tinha propósito, e tudo tinha o seu lugar."
+    },
+    {
+      "file": "fala_115.mp3",
+      "dur": 2.568,
+      "text": "No princípio, Deus."
+    },
+    {
+      "file": "fala_116.mp3",
+      "dur": 2.76,
+      "text": "E eis que era muito bom."
+    }
+  ]
+}
