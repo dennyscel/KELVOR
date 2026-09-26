@@ -1,0 +1,20 @@
+name: Genesis Audio Release
+on:
+  push:
+    branches: [chatgpt-genesis-francisca-public]
+    paths:
+      - '.github/workflows/chatgpt-genesis-audio-release.yml'
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish audio release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="genesis-francisca-audio-v1"
+          gh release delete "$tag" --cleanup-tag -y || true
+          gh release create "$tag" chatgpt_genesis/export/genesis_francisca_10min.mp3 chatgpt_genesis/export/timeline.json --title "Genesis Francisca Audio v1" --notes "Francisca Neural master and exact 10-minute timing."
